@@ -10,7 +10,11 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
     "@lottiefiles/dotlottie-react": "^0.12.2",
+    "@mui/icons-material": "^6.4.1",
+    "@mui/material": "^6.4.1",
     "@tailwindcss/vite": "^4.0.0",
     "lottie-react": "^2.4.1",
     "react": "^18.3.1",
