@@ -3,6 +3,7 @@ import Lottie from 'lottie-react';
 import animation from '../assets/Animation - 1737728757387.json';
 import { FaUserShield } from 'react-icons/fa';
 import { BsFillShieldLockFill } from 'react-icons/bs';
+import { Link } from 'react-router-dom';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -65,6 +66,12 @@ const Login = () => {
             <div className='flex flex-col justify-center items-center mt-4'>
               <p className='text-white'>OR</p>
               <button className='text-white mt-3'>Sign In with Google</button>
+              <p className='mt-3 text-white text-sm'>
+                Dont have an account?
+                <Link to='/register'>
+                    <span className='text-blue-500'> Sign Up</span>
+                </Link>
+              </p>
             </div>
           </form>
         </div>
