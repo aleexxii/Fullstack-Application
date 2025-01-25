@@ -1,13 +1,13 @@
-import React, { useState } from 'react';
-import Lottie from 'lottie-react';
-import animation from '../assets/Animation - 1737728757387.json';
-import { FaUserShield } from 'react-icons/fa';
-import { BsFillShieldLockFill } from 'react-icons/bs';
-import { Link } from 'react-router-dom';
+import React, { useState } from "react";
+import Lottie from "lottie-react";
+import animation from "../assets/Animation - 1737728757387.json";
+import { FaUserShield } from "react-icons/fa";
+import { BsFillShieldLockFill } from "react-icons/bs";
+import { Link } from "react-router-dom";
 
 const Login = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,7 +24,10 @@ const Login = () => {
           <h2 className="text-3xl font-bold mb-8 text-amber-100">Login</h2>
           <form onSubmit={handleSubmit}>
             <div className="mb-6">
-              <label htmlFor="email" className="block text-amber-100 font-bold mb-2">
+              <label
+                htmlFor="email"
+                className="block text-amber-100 font-bold mb-2"
+              >
                 Email Address
               </label>
               <div className="relative">
@@ -40,7 +43,10 @@ const Login = () => {
               </div>
             </div>
             <div className="mb-8">
-              <label htmlFor="password" className="block text-amber-100 font-bold mb-2">
+              <label
+                htmlFor="password"
+                className="block text-amber-100 font-bold mb-2"
+              >
                 Password
               </label>
               <div className="relative">
@@ -63,13 +69,13 @@ const Login = () => {
                 Login
               </button>
             </div>
-            <div className='flex flex-col justify-center items-center mt-4'>
-              <p className='text-white'>OR</p>
-              <button className='text-white mt-3'>Sign In with Google</button>
-              <p className='mt-3 text-white text-sm'>
+            <div className="flex flex-col justify-center items-center mt-4">
+              <p className="text-white">OR</p>
+              <button className="text-white mt-3">Sign In with Google</button>
+              <p className="mt-3 text-white text-sm">
                 Dont have an account?
-                <Link to='/register'>
-                    <span className='text-blue-500'> Sign Up</span>
+                <Link to="/register">
+                  <span className="text-blue-500"> Sign Up</span>
                 </Link>
               </p>
             </div>
