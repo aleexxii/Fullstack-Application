@@ -1,15 +1,16 @@
-import { Response } from "express";
 import jwt from "jsonwebtoken";
 import { IUser } from "../model/User";
+import { Response } from "express";
 
-export const generateToken = (res: Response, user: IUser) => {
-  const token = jwt.sign(
-    { id: user._id, role: user.role },
-    process.env.JWT_SECRET!,
-    { expiresIn: "1d" }
-  );
-  res.cookie("jwt", token, {
+export const generateToken = (user: IUser) => {
+  return jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET!, {
+    expiresIn: "1d",
+  });
+};
+
+export const clearToken = (res: Response) => {
+  res.cookie("jwt", "", {
     httpOnly: true,
-    maxAge: 60 * 60 * 1000,
+    expires: new Date(0),
   });
 };
