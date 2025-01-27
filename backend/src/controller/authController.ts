@@ -3,7 +3,7 @@ import User from "../model/User";
 import { clearToken, generateToken } from "../utils/generateToken";
 
 const registerUser = async (req: Request, res: Response): Promise<Response> => {
-  const { name, email, password } = req.body;
+  const { name, email, password, role } = req.body;
   try {
     const existingUser = await User.findOne({ email });
 
@@ -15,6 +15,7 @@ const registerUser = async (req: Request, res: Response): Promise<Response> => {
       name,
       email,
       password,
+      role,
     });
     await user.save();
     return res.status(200).json({ message: "User registered successfully" });
@@ -42,7 +43,7 @@ const login = async (req: Request, res: Response): Promise<Response> => {
     const userObj = user.toObject();
     const { password: hashedPassword, ...rest } = userObj;
 
-    res.cookie("jwt", token, {
+    res.cookie("accessToken", token, {
       httpOnly: true,
       maxAge: 60 * 60 * 1000,
     });

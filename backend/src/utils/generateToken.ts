@@ -9,7 +9,7 @@ export const generateToken = (user: IUser) => {
 };
 
 export const clearToken = (res: Response) => {
-  res.cookie("jwt", "", {
+  res.cookie("accessToken", "", {
     httpOnly: true,
     expires: new Date(0),
   });
