@@ -3,15 +3,22 @@ import Lottie from "lottie-react";
 import animation from "../assets/Animation - 1737728757387.json";
 import { FaUserShield } from "react-icons/fa";
 import { BsFillShieldLockFill } from "react-icons/bs";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth";
 
 const Login = () => {
+  const navigate = useNavigate()
+  const { login, isLoading, error} = useAuth()
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle login logic here
+    
+    const success = await (login({email,password}))
+    if(success){
+      navigate('/dashboard')
+    }
   };
 
   return (
@@ -66,8 +73,9 @@ const Login = () => {
                 type="submit"
                 className="bg-amber-200 hover:bg-amber-100 text-slate-900 font-bold py-3 px-6 rounded focus:outline-none focus:shadow-outline"
               >
-                Login
+                {isLoading ? "Loading..." : 'Login'}
               </button>
+              {error && <div className="text-sm text-red-500">{error}</div>}
             </div>
             <div className="flex flex-col justify-center items-center mt-4">
               <p className="text-white">OR</p>
