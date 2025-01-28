@@ -1,6 +1,6 @@
 import { useSelector, useDispatch } from "react-redux";
 import { RootState, AppDispatch } from "../redux/store";
-import { login } from "../redux/slices/authSlice";
+import { login, logout, checkAuth } from "../redux/slices/authSlice";
 import { LoginCredentials } from "../types/auth";
 
 export const useAuth = () => {
@@ -9,7 +9,6 @@ export const useAuth = () => {
 
     const handleLogin = async (credentials : LoginCredentials) => {
         try{
-            console.log('credentials >>', credentials);
             await dispatch(login(credentials)).unwrap()
             return true
         }catch (error){
@@ -18,10 +17,20 @@ export const useAuth = () => {
         }
     }
 
+    const handleLogout = () => {
+        dispatch(logout());
+      };
+    
+      const handleCheckAuth = () => {
+        dispatch(checkAuth());
+      };
+
     return {
         user,
         isLoading,
         error,
-        login : handleLogin
+        login : handleLogin,
+        logout: handleLogout,
+        checkAuth: handleCheckAuth
     }
 }
