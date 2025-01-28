@@ -7,17 +7,17 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 
 const Login = () => {
-  const navigate = useNavigate()
-  const { login, isLoading, error} = useAuth()
+  const navigate = useNavigate();
+  const { login, isLoading, error } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    const success = await (login({email,password}))
-    if(success){
-      navigate('/dashboard')
+
+    const success = await login({ email, password });
+    if (success) {
+      navigate("/");
     }
   };
 
@@ -73,7 +73,7 @@ const Login = () => {
                 type="submit"
                 className="bg-amber-200 hover:bg-amber-100 text-slate-900 font-bold py-3 px-6 rounded focus:outline-none focus:shadow-outline"
               >
-                {isLoading ? "Loading..." : 'Login'}
+                {isLoading ? "Loading..." : "Login"}
               </button>
               {error && <div className="text-sm text-red-500">{error}</div>}
             </div>

@@ -12,6 +12,7 @@ export const login = createAsyncThunk<User, LoginCredentials>(
     'auth/login',
     async (credentials, {rejectWithValue}) => {
         try{
+            console.log('cred >>', credentials);
             const response = await fetch("http://localhost:7000/auth/login", {
                 method: "POST",
                 headers: {

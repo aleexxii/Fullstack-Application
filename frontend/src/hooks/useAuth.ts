@@ -9,6 +9,7 @@ export const useAuth = () => {
 
     const handleLogin = async (credentials : LoginCredentials) => {
         try{
+            console.log('credentials >>', credentials);
             await dispatch(login(credentials)).unwrap()
             return true
         }catch (error){
