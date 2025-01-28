@@ -1,5 +1,4 @@
 import { Request, Response, NextFunction } from "express";
-import { Express } from "express-serve-static-core";
 import jwt from "jsonwebtoken";
 
 declare global {
@@ -26,7 +25,7 @@ export const verifyToken = (
   next: NextFunction
 ) => {
   try {
-    const accessToken = req.cookies.jwt;
+    const accessToken = req.cookies.accessToken;
     console.log("acces token >>", accessToken);
 
     if (!accessToken) {

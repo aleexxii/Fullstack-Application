@@ -75,8 +75,8 @@ const Login = () => {
               >
                 {isLoading ? "Loading..." : "Login"}
               </button>
-              {error && <div className="text-sm text-red-500">{error}</div>}
             </div>
+            {error && <div className="mt-3 flex items-center justify-center text-sm text-red-500">{error}</div>}
             <div className="flex flex-col justify-center items-center mt-4">
               <p className="text-white">OR</p>
               <button className="text-white mt-3">Sign In with Google</button>
