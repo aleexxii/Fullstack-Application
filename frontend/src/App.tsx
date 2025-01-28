@@ -6,8 +6,13 @@ import Register from "./auth/Register";
 import Home from "./pages/client/Home";
 import Profile from "./pages/client/Profile";
 import { PrivateRoutes } from "./components/PrivateRoutes";
+import { useEffect } from "react";
+import { checkAuth } from "./redux/slices/authSlice";
 
 function App() {
+  useEffect(() => {
+    store.dispatch(checkAuth());
+  }, []);
   return (
     <>
       <Provider store={store}>
