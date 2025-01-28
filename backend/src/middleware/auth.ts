@@ -26,7 +26,6 @@ export const verifyToken = (
 ) => {
   try {
     const accessToken = req.cookies.accessToken;
-    console.log("acces token >>", accessToken);
 
     if (!accessToken) {
       return res.status(403).json({ message: "No acces token" });
@@ -36,7 +35,7 @@ export const verifyToken = (
       accessToken,
       process.env.JWT_SECRET! as string
     ) as TokenPayload;
-    console.log("decoded >> ", decoded);
+
     req.user = decoded;
     next();
   } catch (error) {
