@@ -5,6 +5,7 @@ import Login from "./auth/Login";
 import Register from "./auth/Register";
 import Home from "./pages/client/Home";
 import Profile from "./pages/client/Profile";
+import { PrivateRoutes } from "./components/PrivateRoutes";
 
 function App() {
   return (
@@ -14,8 +15,22 @@ function App() {
           <Routes>
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
-            <Route path="/" element={<Home />} />
-            <Route path="/profile" element={<Profile />} />
+            <Route
+              path="/"
+              element={
+                <PrivateRoutes roles={["user"]}>
+                  <Home />
+                </PrivateRoutes>
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                <PrivateRoutes roles={["user"]}>
+                  <Profile />
+                </PrivateRoutes>
+              }
+            />
           </Routes>
         </Router>
       </Provider>
