@@ -14,13 +14,15 @@ export const profile = async (req: Request, res: Response) => {
 export const updateProfile = async (req: Request, res: Response) => {
   try {
     const { name, email } = req.body;
+    const profilePicture = req.file?.path
     if (!name && !email) {
         return res.status(400).json({ message: "Nothing to update" });
     }
-    const updateFields: Partial<{ name: string; email: string }> = {};
+    const updateFields: Partial<{ name: string; email: string; profilePicture : string }> = {};
 
     if (name) updateFields.name = name;
     if (email) updateFields.email = email;
+    if (profilePicture) updateFields.profilePicture = profilePicture;
 
     const user = await User.findByIdAndUpdate(req.user?.userId, updateFields, {
       new: true,
