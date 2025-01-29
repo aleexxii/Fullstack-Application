@@ -1,24 +1,24 @@
-
-
 export interface User {
-    id : string;
-    email : string;
-    name : string;
-    role : 'admin' | 'user';
-    profilePicture : string
-}
-
-export interface AuthState {
-    user : User | null;
-    isLoading : boolean;
-    error : string | null
-}
-
-export interface LoginCredentials {
-    email : string;
-    password : string
-}
-
-export interface LoginResponse {
-    user : User
-}
+    _id: string;
+    name: string;
+    email: string;
+    profilePicture: string;
+    role: 'user' | 'admin';
+  }
+  
+  export interface LoginData {
+    email: string;
+    password: string;
+  }
+  
+  export interface AuthState {
+    user: User | null;
+    token: string | null;
+    loading: boolean;
+    error: string | null;
+  }
+  
+  export interface LoginResponse {
+    token: string;
+    user: User;
+  }

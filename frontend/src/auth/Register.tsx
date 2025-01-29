@@ -5,12 +5,34 @@ import Lottie from "lottie-react";
 import { BsFillShieldLockFill } from "react-icons/bs";
 import { Link } from "react-router-dom";
 
-const Register: React.FC = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [name, setName] = useState("");
 
-  const handleSubmit = () => {};
+
+
+const Register = () => {
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    password: '',
+  });
+
+
+  const { name, email, password } = formData;
+  
+
+
+  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+   
+      
+    
+  };
 
   return (
     <div className="flex justify-center items-center h-screen bg-cyan-200">
@@ -34,7 +56,7 @@ const Register: React.FC = () => {
                   type="text"
                   id="name"
                   value={name}
-                  onChange={(e) => setName(e.target.value)}
+                  onChange={onChange}
                   className="shadow appearance-none text-gray-300 bg-slate-800 border rounded w-full py-3 px-3 pl-8 leading-tight focus:outline-none focus:shadow-outline"
                   placeholder="Enter your Name"
                 />
@@ -53,7 +75,7 @@ const Register: React.FC = () => {
                   type="email"
                   id="email"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={onChange}
                   className="shadow appearance-none text-gray-300 bg-slate-800 border rounded w-full py-3 px-3 pl-8 leading-tight focus:outline-none focus:shadow-outline"
                   placeholder="Enter your Email"
                 />
@@ -72,7 +94,7 @@ const Register: React.FC = () => {
                   type="password"
                   id="password"
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={onChange}
                   className="shadow appearance-none text-gray-300 bg-slate-800 border rounded w-full py-3 px-3 pl-8 leading-tight focus:outline-none focus:shadow-outline"
                   placeholder="Enter your Password"
                 />
@@ -95,6 +117,7 @@ const Register: React.FC = () => {
               </p>
             </div>
           </form>
+          
         </div>
       </div>
     </div>

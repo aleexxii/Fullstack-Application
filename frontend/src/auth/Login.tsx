@@ -1,25 +1,41 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Lottie from "lottie-react";
 import animation from "../assets/Animation - 1737728757387.json";
 import { FaUserShield } from "react-icons/fa";
 import { BsFillShieldLockFill } from "react-icons/bs";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../hooks/useAuth";
+import { RootState, AppDispatch } from "../redux/store";
+import { useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
+import { login } from "../redux/slices/authSlice";
 
 const Login = () => {
-  const navigate = useNavigate();
-  const { login, isLoading, error } = useAuth();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const navigate = useNavigate()
 
-    const success = await login({ email, password });
-    if (success) {
-      navigate("/");
+  const dispatch = useDispatch<AppDispatch>()
+  const { user, token, loading, error} = useSelector((state : RootState) => state.auth)
+  
+  console.log(" user >> ",user, 'token >:> ', token);
+
+  useEffect(() => {
+    if(user){
+      if(user.role == 'user'){
+        navigate('/',{ replace: true })
+      }else if(user.role == 'admin'){
+        navigate('/dashboard', { replace: true })
+      }
     }
+  },[user, navigate])
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const res = dispatch(login({email,password}))
+    console.log('res >>>> ', res);
   };
+
 
   return (
     <div className="flex justify-center items-center h-screen bg-cyan-200">
@@ -73,10 +89,12 @@ const Login = () => {
                 type="submit"
                 className="bg-amber-200 hover:bg-amber-100 text-slate-900 font-bold py-3 px-6 rounded focus:outline-none focus:shadow-outline"
               >
-                {isLoading ? "Loading..." : "Login"}
+                {loading ? "Loading..." : 'Login'}
               </button>
             </div>
-            {error && <div className="mt-3 flex items-center justify-center text-sm text-red-500">{error}</div>}
+
+            {error && <p className="flex justify-center pt-2 text-sm text-red-500">{error}</p>}
+
             <div className="flex flex-col justify-center items-center mt-4">
               <p className="text-white">OR</p>
               <button className="text-white mt-3">Sign In with Google</button>

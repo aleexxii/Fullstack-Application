@@ -12,13 +12,13 @@ import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
-import { useAuth } from '../hooks/useAuth';
+// import { useAuth } from '../hooks/useAuth';
 
 const pages = ['Home'];
 const settings = ['Profile', 'Logout'];
 
 function Navbar() {
-  const { logout } = useAuth();
+  // const { logout } = useAuth();
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
 
@@ -36,7 +36,7 @@ function Navbar() {
 
   const handleCloseUserMenu = (setting: string) => {
     if (setting === 'Logout') {
-      logout(); // Call the logout function
+      // logout(); // Call the logout function
     }
     setAnchorElUser(null);
   };
