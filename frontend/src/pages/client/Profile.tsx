@@ -6,7 +6,10 @@ import { RootState } from "../../redux/store";
 const Profile = () => {
   const profilePictureRef = useRef<HTMLInputElement>(null);
   const { user } = useSelector((state : RootState) => state.auth)
-  console.log(user , '<<user');
+  
+
+
+  const displayData = user
 
   return (
     <>
@@ -16,20 +19,20 @@ const Profile = () => {
         <form className="flex flex-col gap-4">
           <input type="file" ref={profilePictureRef} accept="image/*" hidden />
           <img
-            src=""
+            src={displayData?.profilePicture}
             onClick={() => profilePictureRef.current?.click()}
             alt="profile"
             className="mt-2 h-24 w-24 self-center cursor-pointer rounded-full object-cover border-2 border-white"
           />
           <input
-            defaultValue=""
+            defaultValue={displayData?.name}
             type="text"
             id="username"
             placeholder="Username"
             className="bg-slate-100 rounded-lg object-contain p-3"
           />
           <input
-            defaultValue=""
+            defaultValue={displayData?.email}
             type="email"
             id="email"
             placeholder="email"
