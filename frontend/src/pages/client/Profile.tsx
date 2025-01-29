@@ -1,21 +1,47 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Navbar from "../../components/Navbar";
 import { useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../redux/store";
 import { useDispatch } from "react-redux";
-import { fetchProfileData } from "../../redux/slices/profileSlice";
+import {
+  fetchProfileData,
+  updateProfile,
+} from "../../redux/slices/profileSlice";
 
 const Profile = () => {
   const profilePictureRef = useRef<HTMLInputElement>(null);
-  const dispatch = useDispatch<AppDispatch>()
-  const { user } = useSelector((state : RootState) => state.auth)
-  const { profileData, loading, error} = useSelector((state : RootState) => state.profile)
+  const dispatch = useDispatch<AppDispatch>();
+
+  const { user } = useSelector((state: RootState) => state.auth);
+  const { profileData, loading, error } = useSelector(
+    (state: RootState) => state.profile
+  );
+
+  const [isUpdating, setIsUpdating] = useState(false);
+
+  const [name, setName] = useState(user?.name || "");
+  const [email, setEmail] = useState(user?.email || "");
 
   useEffect(() => {
-    if(user){
-      dispatch(fetchProfileData())
+    if (user) {
+      dispatch(fetchProfileData());
     }
-  },[dispatch,user])
+  }, [dispatch, user]);
+
+  const handleUpdate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsUpdating(true);
+
+    const updatedData = { name, email };
+    try {
+      await dispatch(updateProfile(updatedData));
+      dispatch(fetchProfileData());
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsUpdating(false);
+    }
+  };
 
   if (loading) {
     return <div>Loading...</div>;
@@ -25,34 +51,37 @@ const Profile = () => {
     return <div>Error: {error}</div>;
   }
 
-  const displayData = profileData || user
+  const displayData = profileData || user;
+  console.log(" Display data ", displayData);
 
   return (
     <>
       <Navbar />
       <div className="p-3 max-w-lg mx-auto">
         <h1 className="text-3xl font-semibold text-center my-7">Profile</h1>
-        <form className="flex flex-col gap-4">
+        <form className="flex flex-col gap-4" onSubmit={handleUpdate}>
           <input type="file" ref={profilePictureRef} accept="image/*" hidden />
           <img
-            src={displayData?.profilePicture}
+            src={user?.profilePicture}
             onClick={() => profilePictureRef.current?.click()}
             alt="profile"
             className="mt-2 h-24 w-24 self-center cursor-pointer rounded-full object-cover border-2 border-white"
           />
           <input
-            defaultValue={displayData?.name}
+            defaultValue={name}
             type="text"
             id="username"
             placeholder="Username"
             className="bg-slate-100 rounded-lg object-contain p-3"
+            onChange={(e) => setName(e.target.value)}
           />
           <input
-            defaultValue={displayData?.email}
+            defaultValue={email}
             type="email"
             id="email"
             placeholder="email"
             className="bg-slate-100 rounded-lg object-contain p-3"
+            onChange={(e) => setEmail(e.target.value)}
           />
           <input
             type="password"
@@ -61,7 +90,7 @@ const Profile = () => {
             className="bg-slate-100 rounded-lg object-contain p-3"
           />
           <button className="bg-slate-700 text-white p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-80">
-            Update
+            {isUpdating ? "Updating..." : "Update"}
           </button>
         </form>
         <div className="flex justify-between mt-4">

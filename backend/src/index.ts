@@ -6,6 +6,7 @@ import cors from "cors";
 import ConnectDB from "./config/connectDB";
 import authRouter from "./routes/authRouter";
 import adminRouter from "./routes/adminRoutes";
+import userRoutes from "./routes/userRoute";
 
 const app = express();
 app.use(cookieParser());
@@ -21,6 +22,7 @@ app.use(express.json());
 const PORT = process.env.PORT || 4000;
 app.use("/auth", authRouter);
 app.use("/admin", adminRouter);
+app.use("/user", userRoutes);
 ConnectDB();
 
 app.listen(PORT, () => {

@@ -40,13 +40,15 @@ const login = async (req: Request, res: Response): Promise<Response> => {
 
     const token = generateToken(user);
 
+
     const userObj = user.toObject();
     const { password: hashedPassword, ...rest } = userObj;
 
     res.cookie("accessToken", token, {
       httpOnly: true,
+      secure : true,
       maxAge: 60 * 60 * 1000,
-      sameSite : 'strict'
+      sameSite : 'none'
     });
 
     return res.status(200).json({ token, user: rest });
