@@ -6,21 +6,29 @@ import Register from "./auth/Register";
 import Home from "./pages/client/Home";
 import Profile from "./pages/client/Profile";
 import { PersistGate } from "redux-persist/integration/react";
+import { PublicRoute, UserRoute } from "./components/ProtectedRoute";
 
 function App() {
   return (
     <>
       <Provider store={store}>
-        <PersistGate loading={null} persistor={persistor} >
-        <Router>
-          <Routes>
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/" element={<Home />} />
-            <Route path="/profile" element={<Profile />} />
-            {/* <Route path="*" element={<Navigate to="/" replace />} /> */}
-          </Routes>
-        </Router>
+        <PersistGate loading={null} persistor={persistor}>
+          <Router>
+            <Routes>
+
+              <Route element={<PublicRoute />}>
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+              </Route>
+
+              <Route element={<UserRoute />}>
+                <Route path="/" element={<Home />} />
+                <Route path="/profile" element={<Profile />} />
+              </Route>
+              
+              {/* <Route path="*" element={<Navigate to="/" replace />} /> */}
+            </Routes>
+          </Router>
         </PersistGate>
       </Provider>
     </>
