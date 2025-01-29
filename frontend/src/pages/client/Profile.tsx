@@ -1,15 +1,31 @@
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import Navbar from "../../components/Navbar";
 import { useSelector } from "react-redux";
-import { RootState } from "../../redux/store";
+import { AppDispatch, RootState } from "../../redux/store";
+import { useDispatch } from "react-redux";
+import { fetchProfileData } from "../../redux/slices/profileSlice";
 
 const Profile = () => {
   const profilePictureRef = useRef<HTMLInputElement>(null);
+  const dispatch = useDispatch<AppDispatch>()
   const { user } = useSelector((state : RootState) => state.auth)
-  
+  const { profileData, loading, error} = useSelector((state : RootState) => state.profile)
 
+  useEffect(() => {
+    if(user){
+      dispatch(fetchProfileData())
+    }
+  },[dispatch,user])
 
-  const displayData = user
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
+
+  const displayData = profileData || user
 
   return (
     <>
