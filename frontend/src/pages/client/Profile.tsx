@@ -1,8 +1,12 @@
 import { useRef } from "react";
 import Navbar from "../../components/Navbar";
+import { useSelector } from "react-redux";
+import { RootState } from "../../redux/store";
 
 const Profile = () => {
   const profilePictureRef = useRef<HTMLInputElement>(null);
+  const { user } = useSelector((state : RootState) => state.auth)
+  console.log(user , '<<user');
 
   return (
     <>
