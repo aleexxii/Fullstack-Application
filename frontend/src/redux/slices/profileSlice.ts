@@ -47,7 +47,7 @@ export const updateProfile = createAsyncThunk(
         {
           method: "PUT",
           headers: {
-            Authorization: `Bearer ${auth.token}`,
+            Authorization: `Bearer ${auth}`,
             "Content-Type": "application/json",
           },
           credentials: "include",
