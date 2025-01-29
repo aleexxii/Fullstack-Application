@@ -7,6 +7,7 @@ import {
   fetchProfileData,
   updateProfile,
 } from "../../redux/slices/profileSlice";
+import { updateUser } from "../../redux/slices/authSlice";
 
 const Profile = () => {
   const profilePictureRef = useRef<HTMLInputElement>(null);
@@ -18,7 +19,6 @@ const Profile = () => {
   );
 
   const [isUpdating, setIsUpdating] = useState(false);
-
   const [name, setName] = useState(user?.name || "");
   const [email, setEmail] = useState(user?.email || "");
 
@@ -26,7 +26,7 @@ const Profile = () => {
     if (user) {
       dispatch(fetchProfileData());
     }
-  }, [dispatch, user]);
+  }, [ dispatch, user]);
 
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,8 +34,11 @@ const Profile = () => {
 
     const updatedData = { name, email };
     try {
-      await dispatch(updateProfile(updatedData));
-      dispatch(fetchProfileData());
+      const result = await dispatch(updateProfile(updatedData));
+      console.log("updated result : ", result);
+      if (updateProfile.fulfilled.match(result)) {
+        dispatch(updateUser(result.payload));
+      }
     } catch (error) {
       console.log(error);
     } finally {
@@ -68,7 +71,7 @@ const Profile = () => {
             className="mt-2 h-24 w-24 self-center cursor-pointer rounded-full object-cover border-2 border-white"
           />
           <input
-            defaultValue={name}
+            value={name}
             type="text"
             id="username"
             placeholder="Username"
@@ -89,7 +92,10 @@ const Profile = () => {
             placeholder="password"
             className="bg-slate-100 rounded-lg object-contain p-3"
           />
-          <button className="bg-slate-700 text-white p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-80">
+          <button
+            disabled={isUpdating}
+            className="bg-slate-700 text-white p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-80"
+          >
             {isUpdating ? "Updating..." : "Update"}
           </button>
         </form>

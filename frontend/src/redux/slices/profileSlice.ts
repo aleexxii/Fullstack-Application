@@ -60,6 +60,7 @@ export const updateProfile = createAsyncThunk(
       }
 
       const data = await response.json();
+      console.log('updated user >> ', data);
       return data;
     } catch (error) {
       return rejectWithValue(
@@ -89,6 +90,16 @@ const profileSlice = createSlice({
       })
       .addCase(updateProfile.fulfilled, (state, action) => {
         state.profileData = action.payload;
+        state.loading = false;
+        state.error = null;
+      })
+      .addCase(updateProfile.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateProfile.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
       });
   },
 });

@@ -13,9 +13,7 @@ export const profile = async (req: Request, res: Response) => {
 
 export const updateProfile = async (req: Request, res: Response) => {
   try {
-    console.log('reached');
     const { name, email } = req.body;
-    console.log(name, email);
     if (!name && !email) {
         return res.status(400).json({ message: "Nothing to update" });
     }
@@ -23,10 +21,6 @@ export const updateProfile = async (req: Request, res: Response) => {
 
     if (name) updateFields.name = name;
     if (email) updateFields.email = email;
-
-    const existUser = await User.findById(req.user?.userId)
-
-    console.log('existUser > ', existUser);
 
     const user = await User.findByIdAndUpdate(req.user?.userId, updateFields, {
       new: true,
