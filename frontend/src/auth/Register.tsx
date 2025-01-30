@@ -1,20 +1,26 @@
 import { FaUserShield } from "react-icons/fa";
 import signup_animation from "../assets/signup-Animation.json";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Lottie from "lottie-react";
 import { BsFillShieldLockFill } from "react-icons/bs";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { AppDispatch, RootState } from "../redux/store";
+import { useSelector } from "react-redux";
+import { register } from "../redux/slices/authSlice";
 
 
 
 
 const Register = () => {
+  const dispatch = useDispatch<AppDispatch>()
+  const navigate = useNavigate()
+  const { user, loading, error } = useSelector((state : RootState) => state.auth)
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     password: '',
   });
-
 
   const { name, email, password } = formData;
   
@@ -27,12 +33,16 @@ const Register = () => {
     });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-   
-      
-    
+   await dispatch(register(formData))
   };
+
+  useEffect(() => {
+    if(user){
+      navigate('/login')
+    }
+  },[user, navigate])
 
   return (
     <div className="flex justify-center items-center h-screen bg-cyan-200">
@@ -105,8 +115,9 @@ const Register = () => {
                 type="submit"
                 className="bg-amber-200 hover:bg-amber-100 text-slate-900 font-bold py-3 px-6 rounded focus:outline-none focus:shadow-outline"
               >
-                Sign Up
+                {loading ? 'Registering...' : 'Register'}
               </button>
+              {error && <p style={{ color: "red" }}>{error}</p>}
             </div>
             <div className="pt-4">
               <p className="text-white text-sm">
