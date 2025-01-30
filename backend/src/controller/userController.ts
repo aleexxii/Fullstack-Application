@@ -14,18 +14,20 @@ export const profile = async (req: Request, res: Response) => {
 export const updateProfile = async (req: Request, res: Response) => {
   try {
     const { name, email } = req.body;
-    const profilePicture = req.file?.path
-    console.log('Uploaded file:', req.file)
-    console.log('profilePicture',profilePicture);
+    const profilePicture = req.file?.path;
 
     if (!name && !email) {
-        return res.status(400).json({ message: "Nothing to update" });
+      return res.status(400).json({ message: "Nothing to update" });
     }
-    const updateFields: Partial<{ name: string; email: string; profilePicture : string }> = {};
+    const updateFields: Partial<{
+      name: string;
+      email: string;
+      profilePicture: string;
+    }> = {};
 
     if (name) updateFields.name = name;
     if (email) updateFields.email = email;
-    if (profilePicture) updateFields.profilePicture = profilePicture;
+    if (profilePicture) updateFields.profilePicture = profilePicture.replace(/\\/g, "/");
 
     const user = await User.findByIdAndUpdate(req.user?.userId, updateFields, {
       new: true,
@@ -35,7 +37,7 @@ export const updateProfile = async (req: Request, res: Response) => {
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-
+    await user.save();
     res.json(user);
   } catch (err) {
     res.status(500).json({ message: "Server error" });

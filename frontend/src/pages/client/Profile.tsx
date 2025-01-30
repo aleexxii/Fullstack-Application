@@ -18,9 +18,12 @@ const Profile = () => {
     (state: RootState) => state.profile
   );
 
+  const [imagePreview, setImagePreview] = useState(user?.profilePicture || null)
+
   const [isUpdating, setIsUpdating] = useState(false);
   const [name, setName] = useState(user?.name || "");
   const [email, setEmail] = useState(user?.email || "");
+  const [profilePicture, setProfilePicture] = useState<File | null>(null)
 
   useEffect(() => {
     if (user) {
@@ -28,23 +31,49 @@ const Profile = () => {
     }
   }, [ dispatch, user]);
 
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0]
+      setProfilePicture(file);
+      setImagePreview(URL.createObjectURL(file))
+    }
+  };
+
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsUpdating(true);
 
-    const updatedData = { name, email };
+    // const updatedData = { name, email, profilePicture };
+    const updatedData = new FormData()
+    updatedData.append('name' , name)
+    updatedData.append('email' , email)
+    if (profilePicture) {
+      updatedData.append('profilePicture', profilePicture);
+    }
+    
     try {
       const result = await dispatch(updateProfile(updatedData));
-      console.log("updated result : ", result);
+      
       if (updateProfile.fulfilled.match(result)) {
         dispatch(updateUser(result.payload));
+        dispatch(fetchProfileData());
       }
     } catch (error) {
       console.log(error);
     } finally {
       setIsUpdating(false);
     }
-  };
+  };  
+
+
+  useEffect(() => {
+    // Cleanup function to revoke object URL
+    return () => {
+      if (imagePreview && imagePreview !== user?.profilePicture) {
+        URL.revokeObjectURL(imagePreview);
+      }
+    };
+  }, [imagePreview, user?.profilePicture]);
 
   if (loading) {
     return <div>Loading...</div>;
@@ -63,9 +92,9 @@ const Profile = () => {
       <div className="p-3 max-w-lg mx-auto">
         <h1 className="text-3xl font-semibold text-center my-7">Profile</h1>
         <form className="flex flex-col gap-4" onSubmit={handleUpdate}>
-          <input type="file" ref={profilePictureRef} accept="image/*" hidden />
+          <input type="file" name="profilePicture" ref={profilePictureRef} accept="image/*" hidden onChange={handleImageChange}/>
           <img
-            src={user?.profilePicture}
+            src={ imagePreview || user?.profilePicture}
             onClick={() => profilePictureRef.current?.click()}
             alt="profile"
             className="mt-2 h-24 w-24 self-center cursor-pointer rounded-full object-cover border-2 border-white"
@@ -73,7 +102,7 @@ const Profile = () => {
           <input
             value={name}
             type="text"
-            id="username"
+            name="name"
             placeholder="Username"
             className="bg-slate-100 rounded-lg object-contain p-3"
             onChange={(e) => setName(e.target.value)}
@@ -81,7 +110,7 @@ const Profile = () => {
           <input
             defaultValue={email}
             type="email"
-            id="email"
+            name="email"
             placeholder="email"
             className="bg-slate-100 rounded-lg object-contain p-3"
             onChange={(e) => setEmail(e.target.value)}

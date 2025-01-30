@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { User } from "../../types/auth";
-import { RootState } from "../store";
+// import { RootState } from "../store";
 
 interface ProfileState {
   profileData: User | null;
@@ -36,22 +36,18 @@ export const fetchProfileData = createAsyncThunk(
 export const updateProfile = createAsyncThunk(
   "profile/update",
   async (
-    updateData: { name?: string; email?: string },
-    { getState, rejectWithValue }
+    updateData: FormData,
+    { rejectWithValue }
   ) => {
     try {
-      const { auth } = getState() as RootState;
+      // const { auth } = getState() as RootState;
 
       const response = await fetch(
         "http://localhost:7000/user/update-profile",
         {
           method: "PUT",
-          headers: {
-            Authorization: `Bearer ${auth}`,
-            "Content-Type": "application/json",
-          },
           credentials: "include",
-          body: JSON.stringify(updateData),
+          body: updateData
         }
       );
 
