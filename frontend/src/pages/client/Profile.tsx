@@ -14,22 +14,32 @@ const Profile = () => {
   const dispatch = useDispatch<AppDispatch>();
 
   const { user } = useSelector((state: RootState) => state.auth);
-  const { profileData, loading, error } = useSelector(
+  const { loading, error } = useSelector(
     (state: RootState) => state.profile
   );
 
-  const [imagePreview, setImagePreview] = useState(user?.profilePicture || null)
+  const [imagePreview, setImagePreview] = useState<string | null>(user?.profilePicture ? `http://localhost:7000/backend/uploads/${user.profilePicture}` : null)
 
   const [isUpdating, setIsUpdating] = useState(false);
+  /* name and email from redux persist I want to change it */
   const [name, setName] = useState(user?.name || "");
   const [email, setEmail] = useState(user?.email || "");
   const [profilePicture, setProfilePicture] = useState<File | null>(null)
+  
 
   useEffect(() => {
     if (user) {
       dispatch(fetchProfileData());
     }
+    
   }, [ dispatch, user]);
+
+  useEffect(() => {
+    // Ensure the correct profile image is displayed when user data changes
+    if (user?.profilePicture) {
+      setImagePreview(`http://localhost:7000/backend/uploads/${user.profilePicture}`);
+    }
+  }, [user]);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -43,7 +53,6 @@ const Profile = () => {
     e.preventDefault();
     setIsUpdating(true);
 
-    // const updatedData = { name, email, profilePicture };
     const updatedData = new FormData()
     updatedData.append('name' , name)
     updatedData.append('email' , email)
@@ -57,6 +66,10 @@ const Profile = () => {
       if (updateProfile.fulfilled.match(result)) {
         dispatch(updateUser(result.payload));
         dispatch(fetchProfileData());
+
+        if (result.payload.profilePicture) {
+          setImagePreview(`http://localhost:7000/backend/uploads/${result.payload.profilePicture}`);
+        }
       }
     } catch (error) {
       console.log(error);
@@ -67,7 +80,6 @@ const Profile = () => {
 
 
   useEffect(() => {
-    // Cleanup function to revoke object URL
     return () => {
       if (imagePreview && imagePreview !== user?.profilePicture) {
         URL.revokeObjectURL(imagePreview);
@@ -82,9 +94,6 @@ const Profile = () => {
   if (error) {
     return <div>Error: {error}</div>;
   }
-
-  const displayData = profileData || user;
-  console.log(" Display data ", displayData);
 
   return (
     <>

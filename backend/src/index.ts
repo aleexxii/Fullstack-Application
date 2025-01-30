@@ -20,7 +20,7 @@ app.use(
 );
 
 app.use(express.json());
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+app.use("/backend/uploads", express.static(path.join(__dirname, "../uploads")));
 
 const PORT = process.env.PORT || 4000;
 app.use("/auth", authRouter);

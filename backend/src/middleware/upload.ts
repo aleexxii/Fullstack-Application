@@ -22,3 +22,47 @@ const fileFilter = (req : any, file: any, cb : any) => {
 const upload = multer({storage, fileFilter})
 
 export default upload
+
+
+/*
+backend
+    -node_modules
+    -src
+        -config
+        -controller
+        -middleware
+        -model
+        -routes
+        -utils
+        index.ts
+    -uploads
+    -.env
+    -.gitignore
+    -package-lock.json
+    -package.json
+    -tsconfig.json
+frontend
+    -node_modules
+    -public
+    -src
+        -api
+        -assets
+        -auth
+        -components
+        -hooks
+        -pages
+        -redux
+        -types
+        App.tsx
+        index.css
+        vite-env.d.ts
+    eslint.config.js
+    index.html
+    README.md
+    package-lock.json
+    package.json
+    tsconfig.json
+    tsconfig.app.json
+    tsconfig.node.json
+    vite.config.ts
+*/

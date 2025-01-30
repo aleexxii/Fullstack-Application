@@ -14,7 +14,7 @@ export const profile = async (req: Request, res: Response) => {
 export const updateProfile = async (req: Request, res: Response) => {
   try {
     const { name, email } = req.body;
-    const profilePicture = req.file?.path;
+    const profilePicture = req.file?.filename
 
     if (!name && !email) {
       return res.status(400).json({ message: "Nothing to update" });
@@ -38,7 +38,12 @@ export const updateProfile = async (req: Request, res: Response) => {
       return res.status(404).json({ message: "User not found" });
     }
     await user.save();
-    res.json(user);
+    res.json({
+      success: true,
+      name: user.name,
+      email: user.email,
+      profilePicture: user.profilePicture, // Return updated image path
+  });
   } catch (err) {
     res.status(500).json({ message: "Server error" });
   }
