@@ -15,6 +15,9 @@ export const updateProfile = async (req: Request, res: Response) => {
   try {
     const { name, email } = req.body;
     const profilePicture = req.file?.path
+    console.log('Uploaded file:', req.file)
+    console.log('profilePicture',profilePicture);
+
     if (!name && !email) {
         return res.status(400).json({ message: "Nothing to update" });
     }

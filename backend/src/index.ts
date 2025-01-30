@@ -1,5 +1,6 @@
 import express from "express";
 import cookieParser from "cookie-parser";
+import path from "path";
 import dotenv from "dotenv";
 dotenv.config();
 import cors from "cors";
@@ -17,7 +18,9 @@ app.use(
     credentials: true,
   })
 );
+
 app.use(express.json());
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 const PORT = process.env.PORT || 4000;
 app.use("/auth", authRouter);
