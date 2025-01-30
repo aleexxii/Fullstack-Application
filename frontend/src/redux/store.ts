@@ -11,6 +11,7 @@ import {
 } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 import authReducer from "./slices/authSlice";
+import adminSlice  from "./slices/adminSlice";
 import profileReducer from './slices/profileSlice'
 
 const persistConfig = {
@@ -22,7 +23,8 @@ const persistConfig = {
 
 const rootReducer = combineReducers({
     auth : authReducer,
-    profile : profileReducer
+    profile : profileReducer,
+    admin : adminSlice
 })
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

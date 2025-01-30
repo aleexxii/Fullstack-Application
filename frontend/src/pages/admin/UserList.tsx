@@ -1,39 +1,24 @@
-import { useEffect, useState } from "react";
-import { User } from "../../types/auth";
+import { useEffect } from "react";
 import Layout from "./Layout";
+import { useDispatch } from "react-redux";
+import { AppDispatch, RootState } from "../../redux/store";
+import { useSelector } from "react-redux";
+import { fetchUsers } from "../../redux/slices/adminSlice";
 
 const UserList = () => {
-  // const users: User[] = [
-  //   { _id: "1", name: "John Doe", email: "john@example.com", profilePicture : '', role : 'user' },
-  //   { _id: "2", name: "Jane Smith", email: "jane@example.com", profilePicture : '', role : 'user' },
-  //   { _id: "3", name: "Alice Johnson", email: "alice@example.com", profilePicture : '', role : 'user' },
-  // ];
-
-  const [users, setUsers] = useState<User []>([])
-
+  const dispatch = useDispatch<AppDispatch>();
+  const { users } = useSelector((state: RootState) => state.admin);
 
   useEffect(() => {
-    const response = async () =>{
-      const data = await fetch('http://localhost:7000/admin/users-list',{
-        method : 'GET',
-        headers :{
-          'Content-Type' : 'application/json'
-        },
-        credentials : 'include'
-      })
-      setUsers(await data.json())
-    }
-    response()
-  },[users])
-  
+    dispatch(fetchUsers());
+  }, [dispatch]);
+
   const handleEdit = (id: string) => {
     console.log(`Editing user ID: ${id}`);
-    
   };
 
   const handleDelete = (id: string) => {
     console.log(`Deleting user ID: ${id}`);
-    
   };
 
   return (
@@ -72,6 +57,6 @@ const UserList = () => {
       </table>
     </Layout>
   );
-}
+};
 
-export default UserList
+export default UserList;
