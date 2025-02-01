@@ -1,21 +1,18 @@
 import { FaUserShield } from "react-icons/fa";
 import signup_animation from "../assets/signup-Animation.json";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Lottie from "lottie-react";
 import { BsFillShieldLockFill } from "react-icons/bs";
 import { Link, useNavigate } from "react-router-dom";
+import toast from 'react-hot-toast'
 import { useDispatch } from "react-redux";
-import { AppDispatch, RootState } from "../redux/store";
-import { useSelector } from "react-redux";
+import { AppDispatch } from "../redux/store";
 import { register } from "../redux/slices/authSlice";
 
 
-
-
 const Register = () => {
-  const dispatch = useDispatch<AppDispatch>()
-  const navigate = useNavigate()
-  const { user, loading, error } = useSelector((state : RootState) => state.auth)
+const navigate = useNavigate()
+const dispatch = useDispatch<AppDispatch>()
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -35,14 +32,30 @@ const Register = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-   await dispatch(register(formData))
+
+    if(!name || !email || !password){
+      toast.error("Please fill in all fields")
+      return
+    }
+
+    try{
+      const result = await dispatch(register(formData)).unwrap()
+
+      toast.success("Registration successful!")
+console.log(result);
+      setTimeout(() => {
+        navigate('/login')
+      },1500)
+    }catch (error){
+      if (typeof error === 'string') {
+        toast.error(error);
+      } else {
+        toast.error("Registration failed. Please try again.");
+      }
+    }
+
   };
 
-  useEffect(() => {
-    if(user){
-      navigate('/login')
-    }
-  },[user, navigate])
 
   return (
     <div className="flex justify-center items-center h-screen bg-cyan-200">
@@ -64,7 +77,7 @@ const Register = () => {
                 <FaUserShield className="absolute top-3 left-3 text-amber-100" />
                 <input
                   type="text"
-                  id="name"
+                  name="name"
                   value={name}
                   onChange={onChange}
                   className="shadow appearance-none text-gray-300 bg-slate-800 border rounded w-full py-3 px-3 pl-8 leading-tight focus:outline-none focus:shadow-outline"
@@ -83,7 +96,7 @@ const Register = () => {
                 <FaUserShield className="absolute top-3 left-3 text-amber-100" />
                 <input
                   type="email"
-                  id="email"
+                  name="email"
                   value={email}
                   onChange={onChange}
                   className="shadow appearance-none text-gray-300 bg-slate-800 border rounded w-full py-3 px-3 pl-8 leading-tight focus:outline-none focus:shadow-outline"
@@ -102,7 +115,7 @@ const Register = () => {
                 <BsFillShieldLockFill className="absolute top-3 left-3 text-amber-100" />
                 <input
                   type="password"
-                  id="password"
+                  name="password"
                   value={password}
                   onChange={onChange}
                   className="shadow appearance-none text-gray-300 bg-slate-800 border rounded w-full py-3 px-3 pl-8 leading-tight focus:outline-none focus:shadow-outline"
@@ -115,9 +128,8 @@ const Register = () => {
                 type="submit"
                 className="bg-amber-200 hover:bg-amber-100 text-slate-900 font-bold py-3 px-6 rounded focus:outline-none focus:shadow-outline"
               >
-                {loading ? 'Registering...' : 'Register'}
+                SignUp
               </button>
-              {error && <p style={{ color: "red" }}>{error}</p>}
             </div>
             <div className="pt-4">
               <p className="text-white text-sm">
