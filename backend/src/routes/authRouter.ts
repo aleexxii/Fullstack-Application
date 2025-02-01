@@ -1,7 +1,6 @@
 import express from "express";
 import { registerUser, login, logout } from "../controller/authController";
 const router = express.Router();
-import { verifyToken } from "../middleware/auth";
 import User from "../model/User";
 import jwt, { JwtPayload } from "jsonwebtoken";
 router.post("/register", registerUser);
