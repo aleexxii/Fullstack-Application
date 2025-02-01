@@ -24,12 +24,14 @@ export const register = createAsyncThunk<User,RegisterData,{rejectValue : string
         },
         body : JSON.stringify(userData)
       })
+      const data = await response.json()
+      
       if(!response.ok){
         const errorData = await response.json()
         return rejectWithValue(errorData.message)
       }
-      const user = await response.json()
-      return user
+
+      return data
     }catch(error){
       if(error instanceof Error) rejectWithValue(error.message)
     }
@@ -91,9 +93,8 @@ const authSlice = createSlice({
       state.loading = true;
       state.error = null;
     })
-    .addCase(register.fulfilled, (state, action: PayloadAction<User>) => {
+    .addCase(register.fulfilled, (state) => {
       state.loading = false;
-      state.user = action.payload;
       state.error = null;
     })
     .addCase(register.rejected, (state, action) => {
