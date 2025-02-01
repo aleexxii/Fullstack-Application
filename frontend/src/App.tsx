@@ -13,10 +13,27 @@ import {
 } from "./components/ProtectedRoute";
 import Dashboard from "./pages/admin/Dashboard";
 import UserList from "./pages/admin/UserList";
+import { Toaster } from "react-hot-toast";
 
 function App() {
   return (
     <>
+    <Toaster position="top-center"  toastOptions={
+      {
+          duration: 3000,
+          style: {
+            background: '#333',
+            color: '#fff',
+          },
+          success: {
+            duration: 2000,
+          },
+          error: {
+            duration: 3000,
+          },
+        }
+      }
+      />
       <Provider store={store}>
         <PersistGate loading={null} persistor={persistor}>
           <Router>
