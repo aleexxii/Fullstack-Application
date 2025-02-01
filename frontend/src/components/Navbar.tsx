@@ -13,14 +13,15 @@ import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
 import { useNavigate } from 'react-router-dom';
-// import { useAuth } from '../hooks/useAuth';
+import { logout } from '../redux/slices/authSlice';
+import { useDispatch } from 'react-redux';
 
 const pages = ['Home'];
 const settings = ['Profile', 'Logout'];
 
 function Navbar() {
   const navigate = useNavigate()
-  // const { logout } = useAuth();
+  const dispatch = useDispatch()
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
 
@@ -38,7 +39,8 @@ function Navbar() {
 
   const handleCloseUserMenu = (setting: string) => {
     if (setting === 'Logout') {
-      // logout(); // Call the logout function
+      
+      dispatch(logout())
     }
     if(setting == 'Profile'){
       navigate('/profile')
