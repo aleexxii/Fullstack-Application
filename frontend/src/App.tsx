@@ -1,11 +1,10 @@
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import { persistor, store } from "./redux/store";
+import { store } from "./redux/store";
 import { Provider } from "react-redux";
 import Login from "./auth/Login";
 import Register from "./auth/Register";
 import Home from "./pages/client/Home";
 import Profile from "./pages/client/Profile";
-import { PersistGate } from "redux-persist/integration/react";
 import {
   AdminRoute,
   PublicRoute,
@@ -35,7 +34,6 @@ function App() {
       }
       />
       <Provider store={store}>
-        <PersistGate loading={null} persistor={persistor}>
           <Router>
             <Routes>
               <Route element={<PublicRoute />}>
@@ -55,7 +53,6 @@ function App() {
               {/* <Route path="*" element={<Navigate to="/" replace />} /> */}
             </Routes>
           </Router>
-        </PersistGate>
       </Provider>
     </>
   );
