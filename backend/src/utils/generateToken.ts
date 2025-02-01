@@ -8,10 +8,6 @@ export const generateToken = (user: IUser) => {
   });
 };
 
-// export const genereateRefreshToken = (user : IUser) => {
-//   return jwt.sign(user, process.env.JWT_REFRESH_SECRET!, {expiresIn : '7d'})
-// }
-
 export const clearToken = (res: Response) => {
   res.cookie("accessToken", "", {
     httpOnly: true,
