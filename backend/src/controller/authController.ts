@@ -18,7 +18,7 @@ const registerUser = async (req: Request, res: Response): Promise<Response> => {
       role,
     });
     await user.save();
-    return res.status(200).json({ message: "User registered successfully" });
+    return res.status(200).json({message: "User registered successfully" });
   } catch (error) {
     return res.status(500).json({ message: "Internal server error" });
   }
@@ -50,6 +50,7 @@ const login = async (req: Request, res: Response): Promise<Response> => {
       maxAge: 60 * 60 * 1000,
       sameSite : 'none'
     });
+
 
     return res.status(200).json({ token, user: rest });
   } catch (error) {
