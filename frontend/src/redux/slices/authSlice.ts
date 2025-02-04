@@ -27,8 +27,7 @@ export const register = createAsyncThunk<User,RegisterData,{rejectValue : string
       const data = await response.json()
       
       if(!response.ok){
-        const errorData = await response.json()
-        return rejectWithValue(errorData.message)
+        return rejectWithValue(data.message)
       }
 
       return data
@@ -56,21 +55,34 @@ export const login = createAsyncThunk<
       return rejectWithValue(errorData.message);
     }
 
-    const userResponse = await fetch("http://localhost:7000/auth/me", {
-      credentials: "include",
-    });
+    const data = await response.json()
 
-    if (!userResponse.ok) return rejectWithValue("Failed to fetch user data.");
-    const userData = await userResponse.json();
-
-    const token = document.cookie.split("=")[1];
-    return { user: userData.user, token };
+    return data;
   } catch (error) {
     return rejectWithValue(
       error instanceof Error ? error.message : "An error occurred"
     );
   }
 });
+
+export const fetchUser = createAsyncThunk('auth/fetchUser', 
+  async (_, {rejectWithValue}) => {
+    try {
+      const response = await fetch("http://localhost:7000/auth/me", {
+        credentials: "include",
+      });
+      const data = await response.json()
+      if(!response.ok){
+        return rejectWithValue(data.message)
+      }
+      return data.user
+    } catch (error) {
+      return rejectWithValue(
+        error instanceof Error ? error.message : "An error occurred"
+      );
+    }
+  }
+)
 
 const authSlice = createSlice({
   name: "auth",
@@ -120,6 +132,17 @@ const authSlice = createSlice({
         state.user = null;
         state.token = null;
         state.error = (action.payload as string) ?? "An unknown error occurred";
+      })
+      .addCase(fetchUser.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(fetchUser.fulfilled, (state, action)=>{
+        state.user = action.payload;
+        state.loading = false;
+      })
+      .addCase(fetchUser.rejected, (state) => {
+        state.user = null;
+        state.loading = false;
       });
   },
 });

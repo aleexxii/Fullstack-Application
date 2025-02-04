@@ -16,9 +16,8 @@ const Login = () => {
   const navigate = useNavigate()
 
   const dispatch = useDispatch<AppDispatch>()
-  const { user, token, loading, error} = useSelector((state : RootState) => state.auth)
+  const { user, loading, error} = useSelector((state : RootState) => state.auth)
   
-  console.log(" user >> ",user, 'token >:> ', token);
 
   useEffect(() => {
     if(user){
@@ -30,10 +29,9 @@ const Login = () => {
     }
   },[user, navigate])
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const res = dispatch(login({email,password}))
-    console.log('res >>>> ', res);
+    await dispatch(login({email,password}))
   };
 
 
