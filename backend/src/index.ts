@@ -10,7 +10,6 @@ import adminRouter from "./routes/adminRoutes";
 import userRoutes from "./routes/userRoute";
 
 const app = express();
-app.use(cookieParser());
 
 app.use(
   cors({
@@ -20,13 +19,14 @@ app.use(
 );
 
 app.use(express.json());
+app.use(cookieParser());
 app.use("/backend/uploads", express.static(path.join(__dirname, "../uploads")));
 
+ConnectDB();
 const PORT = process.env.PORT || 4000;
 app.use("/auth", authRouter);
 app.use("/admin", adminRouter);
 app.use("/user", userRoutes);
-ConnectDB();
 
 app.listen(PORT, () => {
   console.log(`server running on port : ${PORT}`);

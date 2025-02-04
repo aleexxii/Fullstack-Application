@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import User from "../model/User";
 import { clearToken, generateToken } from "../utils/generateToken";
+import jwt from "jsonwebtoken";
 
 const registerUser = async (req: Request, res: Response): Promise<Response> => {
   const { name, email, password, role } = req.body;
@@ -38,22 +39,50 @@ const login = async (req: Request, res: Response): Promise<Response> => {
       return res.status(400).json({ message: "Incorrect password" });
     }
 
-    const token = generateToken(user);
-
+    const accessToken = generateToken(user);
+    const refreshToken = jwt.sign(
+      { id: user._id, role: user.role },
+      process.env.JWT_REFRESH_SECRET!,
+      { expiresIn: "15m" }
+    );
     const userObj = user.toObject();
     const { password: hashedPassword, ...rest } = userObj;
 
-    res.cookie("accessToken", token, {
+    res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
-      secure: true,
-      maxAge: 60 * 60 * 1000,
+      maxAge: 7 * 24 * 60 * 60 * 1000,
       sameSite: "none",
     });
 
-    return res.status(200).json({ token, user: rest });
+    return res.status(200).json({ token: accessToken, user: rest });
   } catch (error) {
     return res.status(500).json({ message: "Internal server error" });
   }
+};
+const refresh = (req: Request, res: Response) => {
+  
+  const { refreshToken } = req.cookies;
+console.log('refresh token in refresh controller  ', refreshToken);
+
+  if (!refreshToken) return res.status(401).json({ message: "Unauthorized" });
+
+  jwt.verify(
+    refreshToken,
+    process.env.JWT_REFRESH_SECRET!,
+    (err: any, decoded: any) => {
+      console.log('decoded from controller  ', decoded);
+      if (err || !decoded.id) {
+        return res.status(403).json({ message: "Invalid Refresh Token" });
+      }
+      const newAccessToken = jwt.sign(
+        { id: decoded.id, role: decoded.role },
+        process.env.JWT_SECRET!,
+        { expiresIn: "15m" }
+      );
+
+      res.json({ token: newAccessToken });
+    }
+  );
 };
 
 const logout = (req: Request, res: Response) => {
@@ -61,4 +90,5 @@ const logout = (req: Request, res: Response) => {
   res.status(200).json({ message: "User logged out" });
 };
 
-export { registerUser, login, logout };
+
+export { registerUser, login, logout, refresh };
