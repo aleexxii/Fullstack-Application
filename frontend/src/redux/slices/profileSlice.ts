@@ -40,7 +40,6 @@ export const updateProfile = createAsyncThunk(
     { rejectWithValue }
   ) => {
     try {
-      // const { auth } = getState() as RootState;
 
       const response = await fetch(
         "http://localhost:7000/user/update-profile",

@@ -16,45 +16,43 @@ import { Toaster } from "react-hot-toast";
 
 function App() {
   return (
-    <>
-    <Toaster position="top-center"  toastOptions={
-      {
-          duration: 3000,
-          style: {
-            background: '#333',
-            color: '#fff',
-          },
-          success: {
-            duration: 2000,
-          },
-          error: {
+    <Provider store={store}>
+      <Toaster position="top-center"  toastOptions={
+        {
             duration: 3000,
-          },
+            style: {
+              background: '#333',
+              color: '#fff',
+            },
+            success: {
+              duration: 2000,
+            },
+            error: {
+              duration: 3000,
+            },
+          }
         }
-      }
       />
-      <Provider store={store}>
-          <Router>
-            <Routes>
-              <Route element={<PublicRoute />}>
-                <Route path="/login" element={<Login />} />
-                <Route path="/register" element={<Register />} />
-              </Route>
+      <Router>
+        <Routes>
+          <Route element={<PublicRoute />}>
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+          </Route>
 
-              <Route element={<UserRoute />}>
-                <Route path="/" element={<Home />} />
-                <Route path="/profile" element={<Profile />} />
-              </Route>
+          <Route element={<UserRoute />}>
+            <Route path="/" element={<Home />} />
+            <Route path="/profile" element={<Profile />} />
+          </Route>
 
-              <Route element={<AdminRoute />}>
-                <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/user-list" element={<UserList />} />
-              </Route>
-              {/* <Route path="*" element={<Navigate to="/" replace />} /> */}
-            </Routes>
-          </Router>
-      </Provider>
-    </>
+          <Route element={<AdminRoute />}>
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/user-list" element={<UserList />} />
+          </Route>
+          {/* <Route path="*" element={<Navigate to="/" replace />} /> */}
+        </Routes>
+      </Router>
+    </Provider>
   );
 }
 

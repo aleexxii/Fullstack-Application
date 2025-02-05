@@ -25,8 +25,9 @@ export const verifyToken = async (
   next: NextFunction
 ) => {
   try {
+    console.log('header :' ,req.headers);
     const token = req.headers.authorization?.split(" ")[1];
-    console.log("token : ", token);
+    console.log("token from middleware : ", token);
 
     if (!token) {
       return res.status(403).json({ message: "No access token" });

@@ -7,7 +7,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { RootState, AppDispatch } from "../redux/store";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
-import { login } from "../redux/slices/authSlice";
+import { checkAuth, login } from "../redux/slices/authSlice";
 
 const Login = () => {
 
@@ -20,7 +20,12 @@ const Login = () => {
   
 
   useEffect(() => {
+    dispatch(checkAuth())
+  },[dispatch])
+
+  useEffect(() => {
     if(user){
+      
       if(user.role == 'user'){
         navigate('/',{ replace: true })
       }else if(user.role == 'admin'){

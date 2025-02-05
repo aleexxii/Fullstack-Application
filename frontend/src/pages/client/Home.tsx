@@ -4,13 +4,14 @@ import car_anim from "../../assets/car-animation.json";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "../../redux/store";
-import { fetchUser } from "../../redux/slices/authSlice";
+import { checkAuth } from "../../redux/slices/authSlice";
 
 const Home: React.FC = () => {
+  
   const dispatch = useDispatch<AppDispatch>();
   useEffect(() => {
     const user = async () => {
-      return await dispatch(fetchUser());
+      return await dispatch(checkAuth());
     };
     user();
   }, [dispatch]);

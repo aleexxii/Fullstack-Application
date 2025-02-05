@@ -2,6 +2,7 @@ import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { LoginData, AuthState, LoginResponse, User } from "../../types/auth";
 import { store } from "../store";
 
+
 const initialState: AuthState = {
   user: null,
   token: null,
@@ -43,6 +44,55 @@ export const register = createAsyncThunk<
 
 
 
+
+
+export const checkAuth = createAsyncThunk(
+  "auth/checkAuth",
+  async (_, { dispatch, rejectWithValue }) => {
+    const token = store.getState().auth.token
+    console.log('tok > ', token);
+    try {
+      const response = await fetch("http://localhost:7000/auth/me", {
+        headers: {
+          Authorization : `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+      });
+
+      if (response.status === 401) {
+        const refreshResponse = await dispatch(refreshToken()).unwrap();
+        
+        if (refreshResponse) {
+          const retryResponse = await fetch("http://localhost:7000/auth/me", {
+            headers: { Authorization: `Bearer ${refreshResponse.token}` },
+            credentials: "include",
+          });
+          const data = await retryResponse.json();
+          return data.user;
+        }
+      }
+
+      const data = await response.json();
+      if (!response.ok) {
+        return rejectWithValue(data.message);
+      }
+      return data.user;
+    } catch (error) {
+      return rejectWithValue(
+        error instanceof Error ? error.message : "An error occurred"
+      );
+    }
+  }
+);
+
+
+
+
+
+
+
+
 export const login = createAsyncThunk<
   LoginResponse,
   LoginData,
@@ -70,11 +120,16 @@ export const login = createAsyncThunk<
   }
 });
 
+
+
+
+
+
 export const refreshToken = createAsyncThunk<
   LoginResponse,
   void,
   { rejectValue: string }
->("auth/refreshToken", async (_, { rejectWithValue }) => {
+>("auth/refreshToken", async (_, {dispatch, rejectWithValue }) => {
   try {
     const response = await fetch("http://localhost:7000/auth/refresh-token", {
       method: "POST",
@@ -84,6 +139,7 @@ export const refreshToken = createAsyncThunk<
     console.log('refresh token response : ', response);
 
     if (!response.ok) {
+      dispatch(logout())
       return rejectWithValue("Session expired, please log in again.");
     }
     const data: LoginResponse = await response.json();
@@ -96,45 +152,7 @@ export const refreshToken = createAsyncThunk<
   }
 });
 
-export const fetchUser = createAsyncThunk(
-  "auth/fetchUser",
-  async (_, { dispatch, rejectWithValue }) => {
-    const token = store.getState().auth.token
-    try {
-      const response = await fetch("http://localhost:7000/auth/me", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json"
-        },
-        credentials: "include",
-      });
 
-      if (response.status == 401) {
-        const refreshResponse = await dispatch(refreshToken()).unwrap();
-        
-        if (refreshResponse) {
-          const retryResponse = await fetch(`http://localhost:7000/auth/me`, {
-            headers: { Authorization: `Bearer ${refreshResponse.token}`  },
-            credentials: "include",
-          });
-          const data = retryResponse.json()
-          console.log('after refresh data :', data);
-          return (await retryResponse.json()).user;
-        }
-      }
-
-      const data = await response.json();
-      if (!response.ok) {
-        return rejectWithValue(data.message);
-      }
-      return data.user;
-    } catch (error) {
-      return rejectWithValue(
-        error instanceof Error ? error.message : "An error occurred"
-      );
-    }
-  }
-);
 
 const authSlice = createSlice({
   name: "auth",
@@ -188,20 +206,20 @@ const authSlice = createSlice({
         state.token = null;
         state.error = (action.payload as string) ?? "An unknown error occurred";
       })
-      .addCase(fetchUser.pending, (state) => {
+      .addCase(refreshToken.fulfilled, (state, action) => {
+        state.token = action.payload.token;
+      })
+      .addCase(checkAuth.pending, (state) => {
         state.loading = true;
       })
-      .addCase(fetchUser.fulfilled, (state, action) => {
+      .addCase(checkAuth.fulfilled, (state, action) => {
         state.user = action.payload;
+        state.token = action.payload.token;
         state.loading = false;
       })
-      .addCase(fetchUser.rejected, (state) => {
+      .addCase(checkAuth.rejected, (state) => {
         state.user = null;
         state.loading = false;
-      })
-      .addCase(refreshToken.fulfilled, (state, action) => {
-        localStorage.setItem('token', action.payload.token);
-        state.token = action.payload.token;
       });
   },
 });
