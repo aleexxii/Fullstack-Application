@@ -1,19 +1,18 @@
-import { combineReducers, configureStore } from "@reduxjs/toolkit";
+import { configureStore } from "@reduxjs/toolkit";
 import authReducer from "./slices/authSlice";
-import adminSlice  from "./slices/adminSlice";
-import profileReducer from './slices/profileSlice'
-
-
-const rootReducer = combineReducers({
-    auth : authReducer,
-    profile : profileReducer,
-    admin : adminSlice
-})
-
+import { useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 
 export const store = configureStore({
-  reducer: rootReducer,
+  reducer: {
+    auth: authReducer,
+  },
 });
 
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
+
+export const useAppDispatch = () => useDispatch<AppDispatch>();
+export const useAppSelector = <TSelected = unknown>(
+  selector: (state: RootState) => TSelected
+) => useSelector(selector);

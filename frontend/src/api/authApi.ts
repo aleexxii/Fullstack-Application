@@ -1,30 +1,28 @@
-export const loginRequest = async (credentials: {
-  email: string;
-  password: string;
-}) => {
-  const response = await fetch("http://localhost:7000/auth/login", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(credentials),
+import axios from 'axios';
+
+const API_URL = 'http://localhost:7000/auth';
+
+axios.defaults.withCredentials = true;
+
+export const register = async (username: string, email: string, password: string) => {
+  return axios.post(`${API_URL}/register`, {
+    username,
+    email,
+    password,
   });
-  if (!response.ok) throw new Error("Login Failed");
-  console.log("login response >> ", response);
-  return response.json();
 };
 
-export const registerRequest = async (userDetails: {
-  name: string;
-  email: string;
-  password: string;
-}) => {
-  const response = await fetch("http://localhost:7000/auth/login", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(userDetails),
+export const login = async (username: string, password: string) => {
+  return axios.post(`${API_URL}/login`, {
+    username,
+    password,
   });
-  if (!response.ok) throw new Error("Registration Failed");
-  console.log("register response >>", response);
-  return response.json();
 };
+
+export const logout = async () => { 
+  return axios.post(`${API_URL}/logout`);
+};
+
+export const getCurrentUser = async () => {
+  return axios.get(`${API_URL}/user`);
+}

@@ -1,42 +1,24 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Lottie from "lottie-react";
 import animation from "../assets/Animation - 1737728757387.json";
 import { FaUserShield } from "react-icons/fa";
 import { BsFillShieldLockFill } from "react-icons/bs";
-import { Link, useNavigate } from "react-router-dom";
-import { RootState, AppDispatch } from "../redux/store";
-import { useDispatch } from "react-redux";
-import { useSelector } from "react-redux";
-import { checkAuth, login } from "../redux/slices/authSlice";
+import { Link } from "react-router-dom";
+
 
 const Login = () => {
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const navigate = useNavigate()
 
-  const dispatch = useDispatch<AppDispatch>()
-  const { user, loading, error} = useSelector((state : RootState) => state.auth)
+ 
   
 
-  useEffect(() => {
-    dispatch(checkAuth())
-  },[dispatch])
-
-  useEffect(() => {
-    if(user){
-      
-      if(user.role == 'user'){
-        navigate('/',{ replace: true })
-      }else if(user.role == 'admin'){
-        navigate('/dashboard', { replace: true })
-      }
-    }
-  },[user, navigate])
+ 
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await dispatch(login({email,password}))
+    
   };
 
 
@@ -92,11 +74,11 @@ const Login = () => {
                 type="submit"
                 className="bg-amber-200 hover:bg-amber-100 text-slate-900 font-bold py-3 px-6 rounded focus:outline-none focus:shadow-outline"
               >
-                {loading ? "Loading..." : 'Login'}
+                Login
               </button>
             </div>
 
-            {error && <p className="flex justify-center pt-2 text-sm text-red-500">{error}</p>}
+            
 
             <div className="flex flex-col justify-center items-center mt-4">
               <p className="text-white">OR</p>

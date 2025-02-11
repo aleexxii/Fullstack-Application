@@ -8,7 +8,7 @@ import {
 import jwt, { JwtPayload } from "jsonwebtoken";
 
 const registerUser = async (req: Request, res: Response): Promise<Response> => {
-  const { name, email, password, role } = req.body;
+  const { username, email, password, role } = req.body;
   try {
     const existingUser = await User.findOne({ email });
 
@@ -17,15 +17,19 @@ const registerUser = async (req: Request, res: Response): Promise<Response> => {
     }
 
     const user = new User({
-      name,
+      name: username,
       email,
       password,
       role,
     });
     await user.save();
+
     return res.status(200).json({ message: "User registered successfully" });
-  } catch (error) {
-    return res.status(500).json({ message: "Internal server error" });
+  } catch (error: any) {
+    if (error instanceof Error) {
+      return res.status(500).json({ message: error.message });
+    }
+    return res.status(500).json({ message: error.message as string });
   }
 };
 
@@ -60,10 +64,8 @@ const login = async (req: Request, res: Response): Promise<Response> => {
   }
 };
 const refresh = (req: Request, res: Response) => {
-
   const { refreshToken } = req.cookies;
-  console.log(" refreshToken from refresh controller > ", refreshToken);
-console.log(req.cookies);
+
   if (!refreshToken) return res.status(401).json({ message: "Unauthorized" });
 
   jwt.verify(
@@ -99,7 +101,7 @@ console.log(req.cookies);
 export const fetchMe = async (req: Request, res: Response) => {
   try {
     const token = req.headers.authorization?.split(" ")[1];
-    console.log("token form me ", token);
+
     if (!token) return res.status(401).json({ message: "Unauthorized" });
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET!) as JwtPayload;

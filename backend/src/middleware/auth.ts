@@ -25,9 +25,7 @@ export const verifyToken = async (
   next: NextFunction
 ) => {
   try {
-    console.log('header :' ,req.headers);
     const token = req.headers.authorization?.split(" ")[1];
-    console.log("token from middleware : ", token);
 
     if (!token) {
       return res.status(403).json({ message: "No access token" });
@@ -37,7 +35,7 @@ export const verifyToken = async (
       token,
       process.env.JWT_SECRET! as string
     ) as TokenPayload & { id?: string };
-console.log('deoded  >. ', decoded);
+
     req.user = {
       userId: decoded.id || '',
       email: decoded.email ?? "",

@@ -1,14 +1,5 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Layout from "./Layout";
-import { useDispatch } from "react-redux";
-import { AppDispatch, RootState } from "../../redux/store";
-import { useSelector } from "react-redux";
-import {
-  updateUser,
-  createUser,
-  fetchUsers,
-  deleteUser,
-} from "../../redux/slices/adminSlice";
 import { Button, Modal, Box } from "@mui/material";
 
 const style = {
@@ -38,14 +29,13 @@ const UserList = () => {
     email: string;
   } | null>(null);
 
-  const dispatch = useDispatch<AppDispatch>();
-  const { users, error, loading } = useSelector(
-    (state: RootState) => state.admin
-  );
+  const users = [
+    { id: "1", name: "John Doe", email: "john@example.com" },
+    { id: "2", name: "Jane Smith", email: "jane@example.com" },
+    { id: "3", name: "Alice Johnson", email: "alice@example.com" },
+  ];
+  
 
-  useEffect(() => {
-    dispatch(fetchUsers());
-  }, [dispatch]);
 
   const handleOpen = (
     user: { _id: string; name: string; email: string } | null
@@ -67,23 +57,7 @@ const UserList = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (selectedUser) {
-      dispatch(
-        updateUser({
-          id: selectedUser._id,
-          email: userData?.email,
-          name: userData.name,
-        })
-      );
-    } else {
-      dispatch(
-        createUser({
-          name: userData.name,
-          email: userData.email,
-          password: userData.password,
-        })
-      );
-    }
+    
     handleClose();
   };
 
@@ -91,8 +65,8 @@ const UserList = () => {
     setUserData({ ...userData, [e.target.name]: e.target.value });
   };
 
-  const handleDelete = (id: string) => {
-    dispatch(deleteUser(id));
+  const handleDelete = () => {
+    
   };
 
   return (
@@ -104,9 +78,6 @@ const UserList = () => {
 
         <Button onClick={() => handleOpen(null)}> Add User </Button>
       </div>
-
-      {loading && <p>Loading users...</p>}
-      {error && <p className="text-red-500">{error}</p>}
 
       <Modal
         open={open}
@@ -204,13 +175,13 @@ const UserList = () => {
               <td className="border border-gray-300 p-3">{user.email}</td>
               <td className="border border-gray-300 p-3 flex gap-4">
                 <button
-                  onClick={() => handleOpen(user)}
+                  
                   className="text-blue-500 hover:underline"
                 >
                   Edit
                 </button>
                 <button
-                  onClick={() => handleDelete(user._id)}
+                  onClick={() => handleDelete()}
                   className="text-red-500 hover:underline"
                 >
                   Delete

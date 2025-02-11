@@ -4,6 +4,8 @@ import User from "../model/User";
 
 export const profile = async (req: Request, res: Response) => {
   try {
+    console.log('reached');
+    console.log(' Request > ', req);
     const user = req.user;
     res.json(user);
   } catch (error) {

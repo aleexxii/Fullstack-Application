@@ -1,9 +1,8 @@
 import express from "express";
 import { registerUser, login, logout, refresh, fetchMe } from "../controller/authController";
-const router = express.Router();
-import User from "../model/User";
-
 import { verifyToken } from "../middleware/auth";
+const router = express.Router();
+
 router.post("/register", registerUser);
 router.post("/login", login);
 router.post("/logout", logout);

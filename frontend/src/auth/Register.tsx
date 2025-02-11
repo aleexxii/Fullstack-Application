@@ -1,61 +1,48 @@
 import { FaUserShield } from "react-icons/fa";
 import signup_animation from "../assets/signup-Animation.json";
-import { useState } from "react";
 import Lottie from "lottie-react";
+import { useForm } from "react-hook-form";
 import { BsFillShieldLockFill } from "react-icons/bs";
 import { Link, useNavigate } from "react-router-dom";
-import toast from 'react-hot-toast'
-import { useDispatch } from "react-redux";
-import { AppDispatch } from "../redux/store";
-import { register } from "../redux/slices/authSlice";
+import toast from "react-hot-toast";
+import { RootState } from "../redux/store";
+import { useEffect } from "react";
+import { clearError, registerUser } from "../redux/slices/authSlice";
+import { useAppDispatch, useAppSelector } from "../redux/store";
 
+
+
+interface RegisterFrom{
+  username: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+}
 
 const Register = () => {
-const navigate = useNavigate()
-const dispatch = useDispatch<AppDispatch>()
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: '',
-  });
+  const { register, handleSubmit, formState : {errors }, watch } = useForm<RegisterFrom>();
+  const dispatch = useAppDispatch();
+  const { success, loading, error } = useAppSelector((state: RootState) => state.auth);
+  const navigate = useNavigate();
 
-  const { name, email, password } = formData;
-  
-
-
-  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if(!name || !email || !password){
-      toast.error("Please fill in all fields")
-      return
+  useEffect(() => {
+    if(success){
+      toast.success('Registration successful. Please login');
+      navigate('/login');
     }
+  }, [success]);
 
-    try{
-      const result = await dispatch(register(formData)).unwrap()
-
-      toast.success("Registration successful!")
-console.log(result);
-      setTimeout(() => {
-        navigate('/login')
-      },1500)
-    }catch (error){
-      if (typeof error === 'string') {
-        toast.error(error);
-      } else {
-        toast.error("Registration failed. Please try again.");
-      }
+  useEffect(() => {
+    if (error) {
+      toast.error(error);
+      dispatch(clearError());
     }
+  }, [error]);
 
+
+  const onSubmit = async (data : RegisterFrom) => {
+    dispatch(registerUser({username: data.username, email: data.email, password: data.password}));
   };
-
 
   return (
     <div className="flex justify-center items-center h-screen bg-cyan-200">
@@ -65,7 +52,7 @@ console.log(result);
         </div>
         <div className="w-1/2">
           <h2 className="text-3xl font-bold mb-8 text-amber-100">Register</h2>
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit(onSubmit)}>
             <div className="mb-6">
               <label
                 htmlFor="name"
@@ -77,12 +64,11 @@ console.log(result);
                 <FaUserShield className="absolute top-3 left-3 text-amber-100" />
                 <input
                   type="text"
-                  name="name"
-                  value={name}
-                  onChange={onChange}
+                  {...register('username', { required: 'Name is required' })}
                   className="shadow appearance-none text-gray-300 bg-slate-800 border rounded w-full py-3 px-3 pl-8 leading-tight focus:outline-none focus:shadow-outline"
                   placeholder="Enter your Name"
                 />
+                {errors.username && <span className="text-red-500 text-sm">{errors.username.message}</span>}
               </div>
             </div>
             <div className="mb-6">
@@ -96,12 +82,14 @@ console.log(result);
                 <FaUserShield className="absolute top-3 left-3 text-amber-100" />
                 <input
                   type="email"
-                  name="email"
-                  value={email}
-                  onChange={onChange}
+                  {...register('email', { required: 'Name is required',pattern: {
+                    value: /^\S+@\S+$/i,
+                    message: 'Invalid email address',
+                  }, })}
                   className="shadow appearance-none text-gray-300 bg-slate-800 border rounded w-full py-3 px-3 pl-8 leading-tight focus:outline-none focus:shadow-outline"
                   placeholder="Enter your Email"
                 />
+                {errors.email && <span className="text-red-500 text-sm">{error}</span>}
               </div>
             </div>
             <div className="mb-8">
@@ -115,20 +103,36 @@ console.log(result);
                 <BsFillShieldLockFill className="absolute top-3 left-3 text-amber-100" />
                 <input
                   type="password"
-                  name="password"
-                  value={password}
-                  onChange={onChange}
+                  {...register('password', { required: 'Name is required',minLength: {
+                    value: 6,
+                    message: 'Password must be at least 6 characters',
+                  }, })}
                   className="shadow appearance-none text-gray-300 bg-slate-800 border rounded w-full py-3 px-3 pl-8 leading-tight focus:outline-none focus:shadow-outline"
                   placeholder="Enter your Password"
                 />
+                {errors.password && <span className="text-red-500 text-sm">{errors.password.message}</span>}
               </div>
+
+              <div>
+        <label>Confirm Password</label>
+        <input
+          type="password"
+          className="shadow appearance-none text-gray-300 bg-slate-800 border rounded w-full py-3 px-3 pl-8 leading-tight focus:outline-none focus:shadow-outline"
+          {...register('confirmPassword', {
+            validate: (value) =>
+              value === watch('password') || 'Passwords do not match',
+          })}
+        />
+        {errors.confirmPassword && <span className="text-red-500 text-sm">{errors.confirmPassword.message}</span>}
+      </div>
+
             </div>
             <div className="flex items-center justify-center">
               <button
                 type="submit"
                 className="bg-amber-200 hover:bg-amber-100 text-slate-900 font-bold py-3 px-6 rounded focus:outline-none focus:shadow-outline"
               >
-                SignUp
+                {loading ? 'Loading...' : 'Register'}
               </button>
             </div>
             <div className="pt-4">
@@ -140,7 +144,6 @@ console.log(result);
               </p>
             </div>
           </form>
-          
         </div>
       </div>
     </div>
