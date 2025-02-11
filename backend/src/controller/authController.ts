@@ -17,7 +17,7 @@ const registerUser = async (req: Request, res: Response): Promise<Response> => {
     }
 
     const user = new User({
-      name: username,
+      username,
       email,
       password,
       role,
@@ -36,13 +36,15 @@ const registerUser = async (req: Request, res: Response): Promise<Response> => {
 const login = async (req: Request, res: Response): Promise<Response> => {
   const { email, password } = req.body;
   try {
+    
     const user = await User.findOne({ email });
+    
     if (!user) {
       return res.status(400).json({ message: "User not found" });
     }
 
     const passwordMatch = await user?.comparePassword(password);
-
+    
     if (!passwordMatch) {
       return res.status(400).json({ message: "Incorrect password" });
     }
@@ -55,9 +57,10 @@ const login = async (req: Request, res: Response): Promise<Response> => {
 
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
+      sameSite: "none", // SameSite=None; Secure but some time we should remove it for development
       maxAge: 15 * 60 * 1000, // 15 min
     });
-
+    
     return res.status(200).json({ token: accessToken, user: rest });
   } catch (error) {
     return res.status(500).json({ message: "Internal server error" });
