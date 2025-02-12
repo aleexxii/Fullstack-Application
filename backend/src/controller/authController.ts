@@ -36,15 +36,14 @@ const registerUser = async (req: Request, res: Response): Promise<Response> => {
 const login = async (req: Request, res: Response): Promise<Response> => {
   const { email, password } = req.body;
   try {
-    
     const user = await User.findOne({ email });
-    
+
     if (!user) {
       return res.status(400).json({ message: "User not found" });
     }
 
     const passwordMatch = await user?.comparePassword(password);
-    
+
     if (!passwordMatch) {
       return res.status(400).json({ message: "Incorrect password" });
     }
@@ -56,11 +55,11 @@ const login = async (req: Request, res: Response): Promise<Response> => {
     const { password: hashedPassword, ...rest } = userObj;
 
     res.cookie("refreshToken", refreshToken, {
-      httpOnly: true, 
+      httpOnly: true,
       sameSite: "lax", // SameSite=None; Secure but some time we should remove it for development
       maxAge: 15 * 60 * 1000, // 15 min
     });
-    
+
     return res.status(200).json({ token: accessToken, user: rest });
   } catch (error) {
     return res.status(500).json({ message: "Internal server error" });
@@ -68,7 +67,6 @@ const login = async (req: Request, res: Response): Promise<Response> => {
 };
 
 const refresh = (req: Request, res: Response) => {
-  console.log('req.cookies from refresh :>> ', req.cookies);
   const { refreshToken } = req.cookies;
 
   if (!refreshToken) return res.status(401).json({ message: "Unauthorized" });
@@ -105,9 +103,7 @@ const refresh = (req: Request, res: Response) => {
 
 export const getCurrentUser = async (req: Request, res: Response) => {
   try {
-    console.log('user from getCurrentUser :>> ', req.user);
     const user = await User.findById(req.user?.userId).select("-password");
-    console.log('user from >> ', user);
     res.status(200).json({ user });
   } catch (error) {
     res.status(401).json({ message: "Invalid token" });
