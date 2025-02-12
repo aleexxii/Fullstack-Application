@@ -3,7 +3,7 @@ import { login, register, logout, getCurrentUser } from "../../api/authApi";
 import { AxiosError } from "axios";
 
 interface AuthState {
-  user: null | {id:string, username: string; email: string; role: string };
+  user: null | {_id:string, username: string; email: string; role: string };
   loading: boolean;
   error: string | null;
   success: string | null;
@@ -28,7 +28,6 @@ export const registerUser = createAsyncThunk(
   ) => {
     try {
       const response = await register(username, email, password);
-      console.log("response data :", response);
       return response.data;
     } catch (error) {
       if (error instanceof AxiosError) {
@@ -49,7 +48,6 @@ export const loginUser = createAsyncThunk(
   async (userData: { email: string; password: string }) => {
     try {
       const response = await login(userData.email, userData.password);
-      console.log('response :', response);
       return response.data;
     } catch (error) {
       if (error instanceof AxiosError) {
@@ -104,7 +102,6 @@ const authSlice = createSlice({
       })
       .addCase(loginUser.fulfilled, (state, action) => {
         state.loading = false;
-        console.log("success login", action.payload);
         state.user = action.payload.user;
       })
       .addCase(loginUser.rejected, (state, action) => {
