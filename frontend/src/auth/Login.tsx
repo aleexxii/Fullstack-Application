@@ -94,13 +94,7 @@ const Login = () => {
                 <BsFillShieldLockFill className="absolute top-3 left-3 text-amber-100" />
                 <input
                   type="password"
-                  {...register("password", {
-                    required: "Password is required",
-                    minLength: {
-                      value: 6,
-                      message: "Password must be at least 6 characters",
-                    },
-                  })}
+                  {...register("password", {required: "Password is required"})}
                   className="shadow appearance-none text-gray-300 bg-slate-800 border rounded w-full py-3 px-3 pl-8 leading-tight focus:outline-none focus:shadow-outline"
                   placeholder="Enter your Password"
                 />

@@ -45,14 +45,15 @@ export const registerUser = createAsyncThunk(
 
 export const loginUser = createAsyncThunk(
   "auth/login",
-  async (userData: { email: string; password: string }) => {
+  async (userData: { email: string; password: string }, {rejectWithValue}) => {
     try {
       const response = await login(userData.email, userData.password);
       return response.data;
     } catch (error) {
       if (error instanceof AxiosError) {
         if (error.response) {
-          return error.response.data.message;
+          
+          return rejectWithValue(error.response.data.message)
         }
         if (error.request) {
           return "No response from server. Please try again.";
@@ -105,7 +106,7 @@ const authSlice = createSlice({
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message as string;
+        state.error = (action.payload as string) || 'Login Failed';
       })
       .addCase(logoutUser.pending, (state) => {
         state.loading = true;
