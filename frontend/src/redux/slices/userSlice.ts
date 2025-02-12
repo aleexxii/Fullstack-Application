@@ -15,7 +15,7 @@ interface UserState {
 }
 
 const initialState: UserState = {
-    userInfo: null,
+  userInfo: null,
   loading: false,
   error: null,
 };
@@ -36,57 +36,62 @@ export const fetchUser = createAsyncThunk(
 );
 
 export const updateUser = createAsyncThunk(
-    'user/updateUser',
-    async ({ userId, userData }: { userId: string; userData: { username?: string; email?: string } },
-        { rejectWithValue }) => {
-        try {
-            const response = await updateUserInfo(userId, userData);
-            return response.data;
-        } catch (error) {
-            if (error instanceof AxiosError) {
-                return rejectWithValue(error.response?.data);
-            }
-            return rejectWithValue("An unexpected error occurred.");
-        }
+  "user/updateUser",
+  async (
+    {
+      userId,
+      userData,
+    }: { userId: string; userData: { username?: string; email?: string } },
+    { rejectWithValue }
+  ) => {
+    try {
+      const response = await updateUserInfo(userId, userData);
+      return response.data;
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        return rejectWithValue(error.response?.data);
+      }
+      return rejectWithValue("An unexpected error occurred.");
     }
-)
+  }
+);
 
 const userSlice = createSlice({
-    name : 'user',
-    initialState,
-    reducers : {
-        clearUserError : (state) => {
-            state.error = null;
-        }
+  name: "user",
+  initialState,
+  reducers: {
+    clearUserError: (state) => {
+      state.error = null;
     },
-    extraReducers : (builder) => {
-        builder
-        .addCase(fetchUser.pending, (state) => {
-            state.loading = true;
-            state.error = null;
-        })
-        .addCase(fetchUser.fulfilled, (state, action) => {
-            state.loading = false;
-            state.userInfo = action.payload;
-        })
-        .addCase(fetchUser.rejected, (state, action) => {
-            state.loading = false;
-            state.error = action.payload as string;
-        })
-        .addCase(updateUser.pending, (state) => {
-            state.loading = true;
-            state.error = null;
-        })
-        .addCase(updateUser.fulfilled, (state, action) => {
-            state.loading = false;
-            state.userInfo = action.payload;
-        })
-        .addCase(updateUser.rejected, (state, action) => {
-            state.loading = false;
-            state.error = action.payload as string;
-        })
-    }
-})
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchUser.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchUser.fulfilled, (state, action) => {
+        state.loading = false;
+        state.userInfo = action.payload;
+      })
+      .addCase(fetchUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+      .addCase(updateUser.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateUser.fulfilled, (state, action) => {
+        state.loading = false;
+        state.userInfo = action.payload;
+      })
+      .addCase(updateUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      });
+  },
+});
 
 export const { clearUserError } = userSlice.actions;
 

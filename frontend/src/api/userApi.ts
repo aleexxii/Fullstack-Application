@@ -9,9 +9,10 @@ const api = axios.create({
 })
 
 export const fetchUserInfo = async (userId : string) => {
-    return api.get(`/user/${userId}`);
+    return api.get(`/profile/${userId}`);
 }
 
 export const updateUserInfo = async (userId : string, userData : {username? : string, email? : string}) => {
-    return api.put(`/user/${userId}`, userData);
+    console.log('userData > ', userData);
+    return api.put(`/update-profile/${userId}`, userData);
 }

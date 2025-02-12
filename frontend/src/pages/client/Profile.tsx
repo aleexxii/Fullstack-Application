@@ -3,23 +3,25 @@ import Navbar from "../../components/Navbar";
 import { useAppDispatch, useAppSelector } from "../../redux/store";
 import { fetchUser, updateUser } from "../../redux/slices/userSlice";
 
-
-
 const Profile = () => {
   const profilePictureRef = useRef<HTMLInputElement>(null);
   const dispatch = useAppDispatch();
 
-  const { user : authuser } = useAppSelector((state) => state.auth);
+  const { user: authuser } = useAppSelector((state) => state.auth);
   const { userInfo, loading, error } = useAppSelector((state) => state.user);
 
-  const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
+  console.log('authuser :>> ', authuser);
+  console.log('userInfo :>> ', userInfo);
+
+  const [username, setUsername] = useState(authuser?.username || "");
+  const [email, setEmail] = useState(authuser?.email || "");
 
   useEffect(() => {
-    if (authuser?.id) {
-      dispatch(fetchUser(authuser.id));
+    if (authuser?._id) {
+      console.log('fetching user');
+      dispatch(fetchUser(authuser._id));
     }
-  }, [dispatch, authuser?.id]);
+  }, [dispatch, authuser?._id]);
 
   useEffect(() => {
     if (userInfo) {
@@ -28,35 +30,40 @@ const Profile = () => {
     }
   }, [userInfo]);
 
-  const handleImageChange = () => {
-    
-  };
+  const handleImageChange = () => {};
 
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    if(authuser?.id){
+    console.log("clicked", authuser?._id);
+    if (authuser?._id) {
       const updateData = {
         username,
         email,
-      }
-      dispatch(updateUser({userId: authuser.id, userData: updateData}));
+      };
+      console.log("update data :>> ", updateData);
+      dispatch(updateUser({ userId: authuser._id, userData: updateData }));
     }
+  };
 
-    }
+  if (!authuser) return <div>Loading...</div>;
 
-    if (!authuser) return <div>Loading...</div>;
-    
   return (
     <>
       <Navbar />
       <div className="p-3 max-w-lg mx-auto">
         <h1 className="text-3xl font-semibold text-center my-7">Profile</h1>
         <form className="flex flex-col gap-4" onSubmit={handleUpdate}>
-          <input type="file" name="profilePicture" ref={profilePictureRef} accept="image/*" hidden onChange={handleImageChange}/>
+          <input
+            type="file"
+            name="profilePicture"
+            ref={profilePictureRef}
+            accept="image/*"
+            hidden
+            onChange={handleImageChange}
+          />
           <img
             // src={ imagePreview || user?.profilePicture}
-            src={''}
+            src={""}
             onClick={() => profilePictureRef.current?.click()}
             alt="profile"
             className="mt-2 h-24 w-24 self-center cursor-pointer rounded-full object-cover border-2 border-white"
@@ -65,7 +72,6 @@ const Profile = () => {
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             type="text"
-            name="name"
             placeholder="Username"
             className="bg-slate-100 rounded-lg object-contain p-3"
           />
@@ -73,7 +79,6 @@ const Profile = () => {
             defaultValue={email}
             onChange={(e) => setEmail(e.target.value)}
             type="email"
-            name="email"
             placeholder="email"
             className="bg-slate-100 rounded-lg object-contain p-3"
           />
@@ -83,9 +88,7 @@ const Profile = () => {
             placeholder="password"
             className="bg-slate-100 rounded-lg object-contain p-3"
           />
-          <button
-            className="bg-slate-700 text-white p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-80"
-          >
+          <button className="bg-slate-700 text-white p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-80">
             {loading ? "Updating..." : "Update"}
           </button>
           {error && <p className="text-red-500 text-center">{error}</p>}

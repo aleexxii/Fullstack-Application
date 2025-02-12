@@ -1,13 +1,15 @@
 import { Request, Response } from "express";
-import bcrypt from "bcryptjs";
 import User from "../model/User";
 
 export const profile = async (req: Request, res: Response) => {
   try {
-    console.log('reached');
-    console.log(' Request > ', req);
-    const user = req.user;
-    res.json(user);
+    const { userId } = req.params;
+    const user = await User.findById(userId).select("-password");
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.status(200).json(user);
   } catch (error) {
     console.log(error);
   }
@@ -15,10 +17,10 @@ export const profile = async (req: Request, res: Response) => {
 
 export const updateProfile = async (req: Request, res: Response) => {
   try {
-    const { name, email } = req.body;
-    const profilePicture = req.file?.filename
+    const { username, email } = req.body;
+    const profilePicture = req.file?.filename;
 
-    if (!name && !email) {
+    if (!username && !email) {
       return res.status(400).json({ message: "Nothing to update" });
     }
     const updateFields: Partial<{
@@ -27,14 +29,12 @@ export const updateProfile = async (req: Request, res: Response) => {
       profilePicture: string;
     }> = {};
 
-    if (name) updateFields.username = name;
+    if (username) updateFields.username = username;
     if (email) updateFields.email = email;
-    if (profilePicture) updateFields.profilePicture = profilePicture.replace(/\\/g, "/");
+    if (profilePicture)
+      updateFields.profilePicture = profilePicture.replace(/\\/g, "/");
 
-    const user = await User.findByIdAndUpdate(req.user?.userId, updateFields, {
-      new: true,
-      runValidators: true,
-    }).select("-password");
+    const user = await User.findByIdAndUpdate(req.user?.userId, updateFields, {new: true}).select("-password");
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
@@ -45,7 +45,7 @@ export const updateProfile = async (req: Request, res: Response) => {
       username: user.username,
       email: user.email,
       profilePicture: user.profilePicture, // Return updated image path
-  });
+    });
   } catch (err) {
     res.status(500).json({ message: "Server error" });
   }
