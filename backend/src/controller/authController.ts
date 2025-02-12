@@ -56,8 +56,8 @@ const login = async (req: Request, res: Response): Promise<Response> => {
     const { password: hashedPassword, ...rest } = userObj;
 
     res.cookie("refreshToken", refreshToken, {
-      httpOnly: true,    
-      sameSite: "none", // SameSite=None; Secure but some time we should remove it for development
+      httpOnly: true, 
+      sameSite: "lax", // SameSite=None; Secure but some time we should remove it for development
       maxAge: 15 * 60 * 1000, // 15 min
     });
     
