@@ -3,7 +3,7 @@ import { login, register, logout, getCurrentUser } from "../../api/authApi";
 import { AxiosError } from "axios";
 
 interface AuthState {
-  user: null | { username: string; email: string; roles: string };
+  user: null | {id:string, username: string; email: string; roles: string };
   loading: boolean;
   error: string | null;
   success: string | null;
@@ -46,9 +46,22 @@ export const registerUser = createAsyncThunk(
 
 export const loginUser = createAsyncThunk(
   "auth/login",
-  async (userData: { username: string; password: string }) => {
-    const response = await login(userData.username, userData.password);
-    return response.data;
+  async (userData: { email: string; password: string }) => {
+    try {
+      const response = await login(userData.email, userData.password);
+      console.log('response :', response);
+      return response.data;
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        if (error.response) {
+          return error.response.data.message;
+        }
+        if (error.request) {
+          return "No response from server. Please try again.";
+        }
+      }
+      return "An unexpected error occurred. Please try again.";
+    }
   }
 );
 
@@ -90,8 +103,8 @@ const authSlice = createSlice({
       })
       .addCase(loginUser.fulfilled, (state, action) => {
         state.loading = false;
-        console.log("success", action.payload);
-        state.success = action.payload;
+        console.log("success login", action.payload);
+        state.user = action.payload.user;
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;
