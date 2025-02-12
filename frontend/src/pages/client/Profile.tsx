@@ -1,7 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import Navbar from "../../components/Navbar";
 import { useAppDispatch, useAppSelector } from "../../redux/store";
-import { fetchUser, updateUser } from "../../redux/slices/userSlice";
+import { clearUserError, fetchUser, updateUser } from "../../redux/slices/userSlice";
+import toast from "react-hot-toast";
 
 const Profile = () => {
   const profilePictureRef = useRef<HTMLInputElement>(null);
@@ -12,14 +13,11 @@ const Profile = () => {
 
   const [username, setUsername] = useState(authuser?.username || "");
   const [email, setEmail] = useState(authuser?.email || "");
-  const [imagePreview, setImagePreview] = useState<string | null>(
-    authuser?.profilePicture || null
-  );
+  const [imagePreview, setImagePreview] = useState<string | null>(authuser?.profilePicture || null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   useEffect(() => {
     if (authuser?._id) {
-      console.log("fetching user");
       dispatch(fetchUser(authuser._id));
     }
   }, [dispatch, authuser?._id]);
@@ -33,6 +31,12 @@ const Profile = () => {
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
+
+    if (!file?.type.startsWith('image/')) {
+      toast.error('Please upload an image file');
+      return;
+    }
+
     if (file) {
       setSelectedFile(file);
       const reader = new FileReader();
@@ -43,8 +47,20 @@ const Profile = () => {
     }
   };
 
+
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if(!username.trim() || !email.trim()){
+      toast.error('Invalid format')
+      return
+    }
+
+    if (!/\S+@\S+\.\S+/.test(email)) {
+      toast.error('Invalid email format');
+      return;
+    }
+
     if (authuser?._id) {
       const updateData = { username, email };
 
@@ -58,6 +74,13 @@ const Profile = () => {
       setSelectedFile(null);
     }
   };
+
+  useEffect(() => {
+    if (error) {
+      toast.error(error);
+      dispatch(clearUserError());
+    }
+  }, [error, dispatch]);
 
   if (!authuser) return <div>Loading...</div>;
 
@@ -98,20 +121,19 @@ const Profile = () => {
             placeholder="email"
             className="bg-slate-100 rounded-lg object-contain p-3"
           />
-          <input
+          {/* <input
             type="password"
             id="password"
             placeholder="password"
             className="bg-slate-100 rounded-lg object-contain p-3"
-          />
+          /> */}
           <button className="bg-slate-700 text-white p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-80">
             {loading ? "Updating..." : "Update"}
           </button>
-          {error && <p className="text-red-500 text-center">{error}</p>}
         </form>
-        <div className="flex justify-between mt-4">
-          <span className="text-red-700 cursor-pointer">Delete Account</span>
-          <span className="text-red-700 cursor-pointer">Sign Out</span>
+        <div className="flex justify-center mt-4">
+          {/* <span className="text-red-700 cursor-pointer">Delete Account</span> */}
+            <span className="text-red-700 cursor-pointer rounded-full px-4 py-2 bg-red-100 hover:bg-red-200 transition duration-300 ease-in-out transform hover:scale-105">Sign Out</span>
         </div>
       </div>
     </>

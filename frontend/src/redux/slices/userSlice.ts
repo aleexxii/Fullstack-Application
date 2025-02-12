@@ -29,7 +29,7 @@ export const fetchUser = createAsyncThunk(
       return response.data;
     } catch (error) {
       if (error instanceof AxiosError) {
-        return rejectWithValue(error.response?.data);
+        return rejectWithValue(error.response?.data.message);
       }
       return rejectWithValue("An unexpected error occurred.");
     }
@@ -51,7 +51,7 @@ export const updateUser = createAsyncThunk(
       return response.data;
     } catch (error) {
       if (error instanceof AxiosError) {
-        return rejectWithValue(error.response?.data);
+        return rejectWithValue(error.response?.data.message);
       }
       return rejectWithValue("An unexpected error occurred.");
     }
@@ -78,6 +78,7 @@ const userSlice = createSlice({
       })
       .addCase(fetchUser.rejected, (state, action) => {
         state.loading = false;
+        console.log('action payload from rejected ', action.payload);
         state.error = action.payload as string;
       })
       .addCase(updateUser.pending, (state) => {
