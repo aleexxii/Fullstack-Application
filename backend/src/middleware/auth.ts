@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
+import User from "../model/User";
 
 declare global {
   namespace Express {
@@ -14,7 +15,7 @@ declare global {
 }
 
 interface TokenPayload {
-  userId: string;
+  id: string;
   email: string;
   role: string;
 }
@@ -25,19 +26,26 @@ export const verifyToken = async (
   next: NextFunction
 ) => {
   try {
-    const token = req.headers.authorization?.split(" ")[1];
+
+    const token = req.cookies.refreshToken;
+    console.log("token form middleware:", token);
 
     if (!token) {
-      return res.status(403).json({ message: "No access token" });
+      throw new Error("No token found");
     }
-
+console.log('before decoded');
     const decoded = jwt.verify(
       token,
-      process.env.JWT_SECRET! as string
+      process.env.JWT_REFRESH_SECRET! as string
     ) as TokenPayload & { id?: string };
 
+    console.log("decoded :>>", decoded);
+
+    const user = await User.findById(decoded.id).select("-password");
+    console.log("user from auth middleware :>> ", user);
+    
     req.user = {
-      userId: decoded.id || '',
+      userId: decoded.id || "",
       email: decoded.email ?? "",
       role: decoded.role,
     };
@@ -47,9 +55,3 @@ export const verifyToken = async (
   }
 };
 
-export const isAdmin = (req: Request, res: Response, next: NextFunction) => {
-  if (req.user?.role !== "admin") {
-    return res.status(403).json({ message: "Requires admin access" });
-  }
-  next();
-};

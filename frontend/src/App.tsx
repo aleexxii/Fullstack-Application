@@ -7,14 +7,12 @@ import Dashboard from "./pages/admin/Dashboard";
 import UserList from "./pages/admin/UserList";
 import { Toaster } from "react-hot-toast";
 import ProtectedRoute from "./components/ProtectedRoute";
-import { Provider } from "react-redux";
-import { store } from "./redux/store";
 
 
 function App() {
+  
   return (
     <>
-    <Provider store={store}>
       <Toaster
         position="top-center"
         toastOptions={{
@@ -36,19 +34,18 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
 
-          <Route element={<ProtectedRoute allowedRoles={["user"]} />}>
+          <Route element={<ProtectedRoute role={["user"]} />}>
             <Route path="/" element={<Home />} />
             <Route path="/profile" element={<Profile />} />
           </Route>
 
-          <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
+          <Route element={<ProtectedRoute role={["admin"]} />}>
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/user-list" element={<UserList />} />
           </Route>
         </Routes>
       </Router>
-      </Provider>
-      </>
+    </>
   );
 }
 

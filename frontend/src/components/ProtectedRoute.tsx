@@ -1,20 +1,35 @@
 import { useSelector } from "react-redux";
 import { Navigate, Outlet } from "react-router-dom";
-import { RootState } from "../redux/store";
+import { RootState, useAppDispatch } from "../redux/store";
+import { useEffect } from "react";
+import { fetchCurrentUser } from "../redux/slices/authSlice";
 
 
-interface ProtectedRouteProps {
-  allowedRoles?: ('admin' | 'user')[];
-}
+const ProtectedRoute = ({ role } : {role?: string[]}) => {
+  const { user, loading } = useSelector((state: RootState) => state.auth);
+  console.log("user from protected route", user);
+  const dispatch = useAppDispatch();
 
-const ProtectedRoute = ({allowedRoles} : ProtectedRouteProps) => {
-  const { user } = useSelector((state : RootState) => state.auth);
+
+
+  useEffect(() => {
+    if(!user && !loading) {
+      dispatch(fetchCurrentUser());
+    }
+  }, [dispatch, user, loading]);
+
+  if(loading) {
+    return <p>Loading...</p>
+  }
+
   if (!user) {
-    return <Navigate to="/login" />;
+    return <Navigate to="/login" replace/>;
   }
-  if (allowedRoles && !allowedRoles.includes(user.roles as 'admin' | 'user')) {
-    return <Navigate to="/forbidden" />;
+
+  if (role && !role.includes(user.role)) {
+    return <Navigate to="/" replace />;
   }
+  
   return <Outlet />;
 };
 

@@ -1,11 +1,16 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:7000/auth';
 
-axios.defaults.withCredentials = true;
+const API_URL = 'http://localhost:7000/auth';
+const api = axios.create({
+  baseURL: API_URL,
+  withCredentials: true,
+});
+
+console.log('api :>> ', api);
 
 export const register = async (username: string, email: string, password: string) => {
-  return axios.post(`${API_URL}/register`, {
+  return api.post(`/register`, {
     username,
     email,
     password,
@@ -13,16 +18,28 @@ export const register = async (username: string, email: string, password: string
 };
 
 export const login = async (email: string, password: string) => {
-  return axios.post(`${API_URL}/login`, {
+  return api.post(`/login`, {
     email,
     password,
   });
 };
 
 export const logout = async () => { 
-  return axios.post(`${API_URL}/logout`);
+  return api.post(`/logout`);
 };
 
 export const getCurrentUser = async () => {
-  return axios.get(`${API_URL}/user`);
+  return api.get(`/user`);
 }
+
+api.interceptors.response.use(
+  response => response,
+  error => {
+    if (error.response.status === 401) {
+      window.location.href = '/login';
+    }
+    return Promise.reject(error);
+  }
+);
+
+export default api

@@ -3,7 +3,7 @@ import { login, register, logout, getCurrentUser } from "../../api/authApi";
 import { AxiosError } from "axios";
 
 interface AuthState {
-  user: null | {id:string, username: string; email: string; roles: string };
+  user: null | {id:string, username: string; email: string; role: string };
   loading: boolean;
   error: string | null;
   success: string | null;
@@ -73,7 +73,8 @@ export const fetchCurrentUser = createAsyncThunk(
   "auth/fetchCurrentUser",
   async () => {
     const response = await getCurrentUser();
-    return response.data;
+    console.log('response data from fetch user :>>',response.data);
+    return response.data.user;
   }
 );
 

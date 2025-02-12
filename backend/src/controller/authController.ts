@@ -56,7 +56,7 @@ const login = async (req: Request, res: Response): Promise<Response> => {
     const { password: hashedPassword, ...rest } = userObj;
 
     res.cookie("refreshToken", refreshToken, {
-      httpOnly: true,
+      httpOnly: true,    
       sameSite: "none", // SameSite=None; Secure but some time we should remove it for development
       maxAge: 15 * 60 * 1000, // 15 min
     });
@@ -66,7 +66,9 @@ const login = async (req: Request, res: Response): Promise<Response> => {
     return res.status(500).json({ message: "Internal server error" });
   }
 };
+
 const refresh = (req: Request, res: Response) => {
+  console.log('req.cookies from refresh :>> ', req.cookies);
   const { refreshToken } = req.cookies;
 
   if (!refreshToken) return res.status(401).json({ message: "Unauthorized" });
@@ -101,15 +103,12 @@ const refresh = (req: Request, res: Response) => {
   );
 };
 
-export const fetchMe = async (req: Request, res: Response) => {
+export const getCurrentUser = async (req: Request, res: Response) => {
   try {
-    const token = req.headers.authorization?.split(" ")[1];
-
-    if (!token) return res.status(401).json({ message: "Unauthorized" });
-
-    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as JwtPayload;
-    const user = await User.findById(decoded.id).select("-password");
-    res.json({ user });
+    console.log('user from getCurrentUser :>> ', req.user);
+    const user = await User.findById(req.user?.userId).select("-password");
+    console.log('user from >> ', user);
+    res.status(200).json({ user });
   } catch (error) {
     res.status(401).json({ message: "Invalid token" });
   }

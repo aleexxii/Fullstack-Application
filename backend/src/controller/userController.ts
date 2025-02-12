@@ -22,12 +22,12 @@ export const updateProfile = async (req: Request, res: Response) => {
       return res.status(400).json({ message: "Nothing to update" });
     }
     const updateFields: Partial<{
-      name: string;
+      username: string;
       email: string;
       profilePicture: string;
     }> = {};
 
-    if (name) updateFields.name = name;
+    if (name) updateFields.username = name;
     if (email) updateFields.email = email;
     if (profilePicture) updateFields.profilePicture = profilePicture.replace(/\\/g, "/");
 
@@ -42,7 +42,7 @@ export const updateProfile = async (req: Request, res: Response) => {
     await user.save();
     res.json({
       success: true,
-      name: user.name,
+      username: user.username,
       email: user.email,
       profilePicture: user.profilePicture, // Return updated image path
   });

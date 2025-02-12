@@ -27,7 +27,7 @@ const Login = () => {
 
   useEffect(() => {
     if (user) {
-      navigate(user.roles === "admin" ? "/dashboard" : "/");
+      navigate(user.role === "admin" ? "/dashboard" : "/");
     }
   }, [user, navigate]);
 
