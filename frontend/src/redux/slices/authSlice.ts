@@ -3,7 +3,7 @@ import { login, register, logout, getCurrentUser } from "../../api/authApi";
 import { AxiosError } from "axios";
 
 interface AuthState {
-  user: null | {_id:string, username: string; email: string; role: string };
+  user: null | {_id:string, username: string; email: string; role: string, profilePicture: string};
   loading: boolean;
   error: string | null;
   success: string | null;
