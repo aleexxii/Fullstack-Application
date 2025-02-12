@@ -20,9 +20,23 @@ export const updateProfile = async (req: Request, res: Response) => {
     const userData = JSON.parse(req.body.data);
     const { username, email } = userData;
 
-    const profilePicture = req.file?.filename;
+    if(!username && !email){
+      return res.status(400).json({message : 'All fields are required'})
+    }
 
+    if (!/\S+@\S+\.\S+/.test(email)) {
+      return res.status(400).json({ message: "Invalid email format" });
+    }
+    
+    const profilePicture = req.file?.filename;
+    
     const { userId } = req.params;
+
+    const emailExists = await User.findOne({email, _id : {$ne : userId}})
+
+    if(emailExists){
+      return res.status(400).json({message : 'Email already exists'})
+    }
 
     const updateData: any = { username, email };
 
