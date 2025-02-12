@@ -1,33 +1,36 @@
 import { useSelector } from "react-redux";
-import { Navigate, Outlet } from "react-router-dom";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { RootState, useAppDispatch } from "../redux/store";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { fetchCurrentUser } from "../redux/slices/authSlice";
 
 
 const ProtectedRoute = ({ role } : {role?: string[]}) => {
+
   const { user, loading } = useSelector((state: RootState) => state.auth);
-  console.log("user from protected route", user);
   const dispatch = useAppDispatch();
-
-
+  const location = useLocation()
+  const [checkingAuth, setCheckingAuth] = useState(true);
 
   useEffect(() => {
     if(!user && !loading) {
-      dispatch(fetchCurrentUser());
+      dispatch(fetchCurrentUser()).finally(() => setCheckingAuth(false));
+    }else{
+      setCheckingAuth(false);
     }
   }, [dispatch, user, loading]);
 
-  if(loading) {
+  if(loading || checkingAuth) {
     return <p>Loading...</p>
   }
 
   if (!user) {
-    return <Navigate to="/login" replace/>;
+    return <Navigate to="/login" state={{from : location}} replace/>;
   }
 
   if (role && !role.includes(user.role)) {
-    return <Navigate to="/" replace />;
+    // prevent user from accessing admin page or prevent admin from accessing user page
+    return <Navigate to={user.role === "admin" ? "/dashboard" : "/"} replace />;
   }
   
   return <Outlet />;

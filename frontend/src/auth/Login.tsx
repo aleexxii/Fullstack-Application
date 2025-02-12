@@ -3,7 +3,7 @@ import Lottie from "lottie-react";
 import animation from "../assets/Animation - 1737728757387.json";
 import { FaUserShield } from "react-icons/fa";
 import { BsFillShieldLockFill } from "react-icons/bs";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { useAppDispatch, useAppSelector } from "../redux/store";
 import toast from "react-hot-toast";
@@ -21,15 +21,19 @@ const Login = () => {
     formState: { errors },
   } = useForm<LoginForm>();
   const dispatch = useAppDispatch();
+  const location = useLocation();
 
   const { user, loading, error } = useAppSelector((state) => state.auth);
   const navigate = useNavigate();
 
   useEffect(() => {
     if (user) {
-      navigate(user.role === "admin" ? "/dashboard" : "/");
+      const redirectTo =
+        location.state?.from?.pathname ||
+        (user.role === "admin" ? "/dashboard" : "/");
+      navigate(redirectTo, { replace: true });
     }
-  }, [user, navigate]);
+  }, [user, navigate, location]);
 
   useEffect(() => {
     if (error) {
