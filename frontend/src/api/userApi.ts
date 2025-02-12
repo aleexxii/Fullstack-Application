@@ -1,5 +1,7 @@
 import axios from "axios";
-import { API_URL } from "./authApi";
+
+
+const API_URL = 'http://localhost:7000/user';
 
 const api = axios.create({
     baseURL: API_URL,
