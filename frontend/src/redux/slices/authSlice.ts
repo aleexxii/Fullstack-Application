@@ -71,7 +71,6 @@ export const fetchCurrentUser = createAsyncThunk(
   "auth/fetchCurrentUser",
   async () => {
     const response = await getCurrentUser();
-    console.log('response data from fetch user :>>',response.data);
     return response.data.user;
   }
 );

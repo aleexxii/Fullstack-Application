@@ -3,6 +3,7 @@ import Navbar from "../../components/Navbar";
 import { useAppDispatch, useAppSelector } from "../../redux/store";
 import { clearUserError, fetchUser, updateUser } from "../../redux/slices/userSlice";
 import toast from "react-hot-toast";
+import { logoutUser } from "../../redux/slices/authSlice";
 
 const Profile = () => {
   const profilePictureRef = useRef<HTMLInputElement>(null);
@@ -84,6 +85,10 @@ const Profile = () => {
 
   if (!authuser) return <div>Loading...</div>;
 
+  const handleLogout = () => {
+    dispatch(logoutUser())
+  }
+
   return (
     <>
       <Navbar />
@@ -133,7 +138,7 @@ const Profile = () => {
         </form>
         <div className="flex justify-center mt-4">
           {/* <span className="text-red-700 cursor-pointer">Delete Account</span> */}
-            <span className="text-red-700 cursor-pointer rounded-full px-4 py-2 bg-red-100 hover:bg-red-200 transition duration-300 ease-in-out transform hover:scale-105">Sign Out</span>
+            <span className="text-red-700 cursor-pointer rounded-full px-4 py-2 bg-red-100 hover:bg-red-200 transition duration-300 ease-in-out transform hover:scale-105" onClick={handleLogout}>Sign Out</span>
         </div>
       </div>
     </>
