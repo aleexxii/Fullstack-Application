@@ -10,6 +10,6 @@ export const fetchUserInfo = async (userId : string) => {
     return api.get(`/user/${userId}`);
 }
 
-export const updateUserInfo = async (userId : string, userData : {username : string, email : string}) => {
+export const updateUserInfo = async (userId : string, userData : {username? : string, email? : string}) => {
     return api.put(`/user/${userId}`, userData);
 }
