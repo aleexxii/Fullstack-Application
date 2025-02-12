@@ -26,10 +26,7 @@ export const verifyToken = async (
   next: NextFunction
 ) => {
   try {
-
-    console.log("cookies form middleware:", req.cookies);
     const token = req.cookies.refreshToken;
-    console.log("token form middleware:", token);
 
     if (!token) {
       throw new Error("No token found");
@@ -40,11 +37,8 @@ export const verifyToken = async (
       process.env.JWT_REFRESH_SECRET! as string
     ) as TokenPayload & { id?: string };
 
-    console.log("decoded :>>", decoded);
-
     const user = await User.findById(decoded.id).select("-password");
-    console.log("user from auth middleware :>> ", user);
-    
+
     req.user = {
       userId: decoded.id || "",
       email: decoded.email ?? "",
@@ -55,4 +49,3 @@ export const verifyToken = async (
     return res.status(401).json({ message: "Invalid acces token" });
   }
 };
-
