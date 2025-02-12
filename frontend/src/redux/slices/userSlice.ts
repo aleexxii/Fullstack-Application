@@ -4,7 +4,7 @@ import { fetchUserInfo, updateUserInfo } from "../../api/userApi";
 import { AxiosError } from "axios";
 
 interface UserState {
-  user: {
+  userInfo: {
     _id: string;
     username: string;
     email: string;
@@ -15,7 +15,7 @@ interface UserState {
 }
 
 const initialState: UserState = {
-  user: null,
+    userInfo: null,
   loading: false,
   error: null,
 };
@@ -67,7 +67,7 @@ const userSlice = createSlice({
         })
         .addCase(fetchUser.fulfilled, (state, action) => {
             state.loading = false;
-            state.user = action.payload;
+            state.userInfo = action.payload;
         })
         .addCase(fetchUser.rejected, (state, action) => {
             state.loading = false;
@@ -79,7 +79,7 @@ const userSlice = createSlice({
         })
         .addCase(updateUser.fulfilled, (state, action) => {
             state.loading = false;
-            state.user = action.payload;
+            state.userInfo = action.payload;
         })
         .addCase(updateUser.rejected, (state, action) => {
             state.loading = false;
@@ -90,7 +90,7 @@ const userSlice = createSlice({
 
 export const { clearUserError } = userSlice.actions;
 
-export const selectUser = (state: RootState) => state?.user?.user;
+export const selectUser = (state: RootState) => state?.user?.userInfo;
 export const selectUserLoading = (state: RootState) => state?.user?.loading;
 export const selectUserError = (state: RootState) => state?.user?.error;
 
