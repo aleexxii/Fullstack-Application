@@ -9,6 +9,7 @@ interface UserState {
     username: string;
     email: string;
     role: string;
+    profilePicture: string;
   } | null;
   loading: boolean;
   error: string | null;
@@ -41,11 +42,12 @@ export const updateUser = createAsyncThunk(
     {
       userId,
       userData,
-    }: { userId: string; userData: { username?: string; email?: string } },
+      file,
+    }: { userId: string; userData: { username?: string; email?: string }; file?: File; },
     { rejectWithValue }
   ) => {
     try {
-      const response = await updateUserInfo(userId, userData);
+      const response = await updateUserInfo(userId, userData, file);
       return response.data;
     } catch (error) {
       if (error instanceof AxiosError) {

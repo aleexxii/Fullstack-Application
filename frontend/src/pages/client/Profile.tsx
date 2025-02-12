@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Navbar from "../../components/Navbar";
 import { useAppDispatch, useAppSelector } from "../../redux/store";
 import { fetchUser, updateUser } from "../../redux/slices/userSlice";
@@ -10,15 +10,16 @@ const Profile = () => {
   const { user: authuser } = useAppSelector((state) => state.auth);
   const { userInfo, loading, error } = useAppSelector((state) => state.user);
 
-  console.log('authuser :>> ', authuser);
-  console.log('userInfo :>> ', userInfo);
-
   const [username, setUsername] = useState(authuser?.username || "");
   const [email, setEmail] = useState(authuser?.email || "");
+  const [imagePreview, setImagePreview] = useState<string | null>(
+    authuser?.profilePicture || null
+  );
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   useEffect(() => {
     if (authuser?._id) {
-      console.log('fetching user');
+      console.log("fetching user");
       dispatch(fetchUser(authuser._id));
     }
   }, [dispatch, authuser?._id]);
@@ -30,18 +31,31 @@ const Profile = () => {
     }
   }, [userInfo]);
 
-  const handleImageChange = () => {};
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setSelectedFile(file);
+      const reader = new FileReader();
+      reader.onload = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("clicked", authuser?._id);
     if (authuser?._id) {
-      const updateData = {
-        username,
-        email,
-      };
-      console.log("update data :>> ", updateData);
-      dispatch(updateUser({ userId: authuser._id, userData: updateData }));
+      const updateData = { username, email };
+
+      dispatch(
+        updateUser({
+          userId: authuser._id,
+          userData: updateData,
+          file: selectedFile || undefined,
+        })
+      );
+      setSelectedFile(null);
     }
   };
 
@@ -61,11 +75,13 @@ const Profile = () => {
             hidden
             onChange={handleImageChange}
           />
+
           <img
-            // src={ imagePreview || user?.profilePicture}
-            src={""}
+            src={imagePreview || userInfo?.profilePicture}
             onClick={() => profilePictureRef.current?.click()}
-            alt="profile"
+            alt={`${import.meta.env.VITE_API_BASE_URL}${
+              userInfo?.profilePicture
+            }`}
             className="mt-2 h-24 w-24 self-center cursor-pointer rounded-full object-cover border-2 border-white"
           />
           <input

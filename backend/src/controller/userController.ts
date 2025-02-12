@@ -17,36 +17,82 @@ export const profile = async (req: Request, res: Response) => {
 
 export const updateProfile = async (req: Request, res: Response) => {
   try {
-    const { username, email } = req.body;
+    const userData = JSON.parse(req.body.data);
+    const { username, email } = userData;
+
     const profilePicture = req.file?.filename;
 
-    if (!username && !email) {
-      return res.status(400).json({ message: "Nothing to update" });
-    }
-    const updateFields: Partial<{
-      username: string;
-      email: string;
-      profilePicture: string;
-    }> = {};
+    const { userId } = req.params;
 
-    if (username) updateFields.username = username;
-    if (email) updateFields.email = email;
+    const updateData: any = { username, email };
+
     if (profilePicture)
-      updateFields.profilePicture = profilePicture.replace(/\\/g, "/");
+      updateData.profilePicture = `http://localhost:7000/backend/uploads/${profilePicture}`;
 
-    const user = await User.findByIdAndUpdate(req.user?.userId, updateFields, {new: true}).select("-password");
-
+    const user = await User.findByIdAndUpdate(userId, updateData, {
+      new: true,
+    }).select("-password");
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
     await user.save();
-    res.json({
-      success: true,
-      username: user.username,
-      email: user.email,
-      profilePicture: user.profilePicture, // Return updated image path
-    });
+    res.json({ user });
   } catch (err) {
     res.status(500).json({ message: "Server error" });
   }
 };
+
+/*
+backend -
+  src -
+    controller -
+      userController.ts
+      authController.ts
+    config -
+      connectDB.ts
+    middleware -
+      authMiddleware.ts
+      uploadMiddleware.ts
+    model -
+      User.ts
+    routes -
+      authRoutes.ts
+      userRoutes.ts
+      adminRoutes.ts
+    utils -
+      generateToken.ts
+    index.ts
+  uploads -
+frontend -
+  public -
+    src -
+      auth -
+        Login.tsx
+        Register.tsx
+      api -
+        authApi.ts
+        userApi.ts
+      components -
+        Navbar.tsx
+        ProtectedRoute.tsx
+      pages -
+        admin -
+          Dashboard.tsx
+          Layout.tsx
+          Users.tsx
+        client -
+          Profile.tsx
+          Home.tsx
+      redux -
+        slices -
+          authSlice.ts
+          userSlice.ts
+        store.ts
+      App.tsx
+      index.tsx
+  .gitignore
+  package.json
+  README.md
+  tsconfig.json
+  yarn.lock
+*/
