@@ -27,13 +27,14 @@ export const verifyToken = async (
 ) => {
   try {
 
+    console.log("cookies form middleware:", req.cookies);
     const token = req.cookies.refreshToken;
     console.log("token form middleware:", token);
 
     if (!token) {
       throw new Error("No token found");
     }
-console.log('before decoded');
+
     const decoded = jwt.verify(
       token,
       process.env.JWT_REFRESH_SECRET! as string
