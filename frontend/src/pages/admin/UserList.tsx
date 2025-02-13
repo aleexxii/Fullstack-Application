@@ -36,9 +36,15 @@ const UserList = () => {
     username: string;
     email: string;
   } | null>(null);
-
   const dispatch = useAppDispatch();
   const { users } = useAppSelector((state) => state.admin);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const filterdUsers = users.filter(
+    (user) =>
+      user.username.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      user.email.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   useEffect(() => {
     dispatch(fetchAllUsers());
@@ -118,6 +124,16 @@ const UserList = () => {
         <Button onClick={() => handleOpen(null)}> Add User </Button>
       </div>
 
+      <div className="p-3">
+        <input
+          type="text"
+          className="p-2 border border-gray-300 rounded-lg"
+          value={searchQuery}
+          placeholder="search users"
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+      </div>
+
       <Modal
         open={open}
         onClose={handleClose}
@@ -169,21 +185,41 @@ const UserList = () => {
                 </div>
 
                 {!selectedUser && (
-                  <div className="mb-6">
-                    <label
-                      htmlFor="password"
-                      className="block text-gray-700 font-bold mb-2"
-                    >
-                      Password
-                    </label>
-                    <input
-                      type="password"
-                      name="password"
-                      value={userData.password}
-                      onChange={handleChange}
-                      className="w-full p-2 border border-gray-300 rounded-lg"
-                      required
-                    />
+                  <div>
+                    <div className="mb-6">
+                      <label
+                        htmlFor="password"
+                        className="block text-gray-700 font-bold mb-2"
+                      >
+                        Password
+                      </label>
+                      <input
+                        type="password"
+                        name="password"
+                        value={userData.password}
+                        onChange={handleChange}
+                        className="w-full p-2 border border-gray-300 rounded-lg"
+                        placeholder="Password"
+                        required
+                      />
+                    </div>
+                    <div className="mb-6">
+                      <label
+                        htmlFor="password"
+                        className="block text-gray-700 font-bold mb-2"
+                      >
+                        Confirm password
+                      </label>
+                      <input
+                        type="password"
+                        name="password"
+                        value={userData.password}
+                        onChange={handleChange}
+                        className="w-full p-2 border border-gray-300 rounded-lg"
+                        placeholder="Confirm Password"
+                        required
+                      />
+                    </div>
                   </div>
                 )}
 
@@ -204,30 +240,40 @@ const UserList = () => {
           <tr>
             <th className="border border-gray-300 p-3">username</th>
             <th className="border border-gray-300 p-3">Email</th>
+            <th className="border border-gray-300 p-3">Role</th>
             <th className="border border-gray-300 p-3">Actions</th>
           </tr>
         </thead>
         <tbody>
-          {users.map((user) => (
-            <tr key={user.email} className="hover:bg-gray-100">
-              <td className="border border-gray-300 p-3">{user.username}</td>
-              <td className="border border-gray-300 p-3">{user.email}</td>
-              <td className="border border-gray-300 p-3 flex gap-4">
-                <button
-                  onClick={() => handleOpen(user)}
-                  className="text-blue-500 hover:underline"
-                >
-                  Edit
-                </button>
-                <button
-                  onClick={() => handleDelete(user._id!)}
-                  className="text-red-500 hover:underline"
-                >
-                  Delete
-                </button>
+          {filterdUsers.length == 0 ? (
+            <tr>
+              <td colSpan={3} className="text-center p-4">
+                No users found.
               </td>
             </tr>
-          ))}
+          ) : (
+            filterdUsers.map((user) => (
+              <tr key={user.email} className="hover:bg-gray-100">
+                <td className="border border-gray-300 p-3">{user.username}</td>
+                <td className="border border-gray-300 p-3">{user.email}</td>
+                <td className="border border-gray-300 p-3">{user.role}</td>
+                <td className="border border-gray-300 p-3 flex gap-4">
+                  <button
+                    onClick={() => handleOpen(user)}
+                    className="text-blue-500 hover:underline"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => handleDelete(user._id!)}
+                    className="text-red-500 hover:underline"
+                  >
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            ))
+          )}
         </tbody>
       </table>
     </Layout>

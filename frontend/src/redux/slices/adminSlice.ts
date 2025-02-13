@@ -32,9 +32,7 @@ export const create_user = createAsyncThunk(
     password: string;
     role: string;
   }) => {
-    console.log("userdata from create user : ", userdata);
     const response = await createUser(userdata);
-    console.log("response data ", response);
     return response.data;
   }
 );
