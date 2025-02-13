@@ -1,6 +1,14 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Layout from "./Layout";
 import { Button, Modal, Box } from "@mui/material";
+import { useAppDispatch, useAppSelector } from "../../redux/store";
+import {
+  create_user,
+  delete_user,
+  fetchAllUsers,
+  update_user,
+} from "../../redux/slices/adminSlice";
+import toast from "react-hot-toast";
 
 const style = {
   position: "absolute",
@@ -19,32 +27,31 @@ const style = {
 const UserList = () => {
   const [open, setOpen] = useState(false);
   const [userData, setUserData] = useState({
-    name: "",
+    username: "",
     email: "",
     password: "",
   });
   const [selectedUser, setSelectedUser] = useState<{
     _id: string;
-    name: string;
+    username: string;
     email: string;
   } | null>(null);
 
-  const users = [
-    { id: "1", name: "John Doe", email: "john@example.com" },
-    { id: "2", name: "Jane Smith", email: "jane@example.com" },
-    { id: "3", name: "Alice Johnson", email: "alice@example.com" },
-  ];
-  
+  const dispatch = useAppDispatch();
+  const { users } = useAppSelector((state) => state.admin);
 
+  useEffect(() => {
+    dispatch(fetchAllUsers());
+  }, [dispatch]);
 
   const handleOpen = (
-    user: { _id: string; name: string; email: string } | null
+    user: { _id: string; username: string; email: string } | null
   ) => {
     setSelectedUser(user);
     setUserData(
       user
-        ? { name: user.name, email: user.email, password: "" }
-        : { name: "", email: "", password: "" }
+        ? { username: user.username, email: user.email, password: "" }
+        : { username: "", email: "", password: "" }
     );
     setOpen(true);
   };
@@ -54,19 +61,52 @@ const UserList = () => {
     setSelectedUser(null);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    
-    handleClose();
+    try {
+      if (selectedUser) {
+        await dispatch(
+          update_user({
+            userId: selectedUser._id,
+            userData: {
+              username: userData.username,
+              email: userData.email,
+              role: "user",
+            },
+          })
+        );
+        toast.success("User updated successfully");
+      } else {
+        await dispatch(
+          create_user({
+            username: userData.username,
+            email: userData.email,
+            password: userData.password,
+            role: "user",
+          })
+        );
+        toast.success("User created successfully");
+      }
+      dispatch(fetchAllUsers());
+      handleClose();
+    } catch (error) {
+      if (error instanceof Error)
+        toast.error(error.message || "Operation failed");
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUserData({ ...userData, [e.target.name]: e.target.value });
   };
 
-  const handleDelete = () => {
-    
+  const handleDelete = async (userId: string) => {
+    try {
+      dispatch(delete_user(userId)).unwrap();
+      toast.success("User deleted successfully");
+    } catch (err) {
+      console.log(err);
+      toast.error("Failed to delete user");
+    }
   };
 
   return (
@@ -75,7 +115,6 @@ const UserList = () => {
         <h1 className="text-3xl font-bold text-gray-800 mb-0">
           User Management
         </h1>
-
         <Button onClick={() => handleOpen(null)}> Add User </Button>
       </div>
 
@@ -95,16 +134,16 @@ const UserList = () => {
               <form onSubmit={handleSubmit}>
                 <div className="mb-4">
                   <label
-                    htmlFor="name"
+                    htmlFor="username"
                     className="block text-gray-700 font-bold mb-2"
                   >
-                    Name
+                    username
                   </label>
                   <input
                     type="text"
-                    name="name"
-                    placeholder="Name"
-                    value={userData.name}
+                    name="username"
+                    placeholder="username"
+                    value={userData.username}
                     onChange={handleChange}
                     className="w-full p-2 border border-gray-300 rounded-lg"
                     required
@@ -163,7 +202,7 @@ const UserList = () => {
       <table className="w-full border-collapse border border-gray-300 text-left">
         <thead className="bg-gray-200">
           <tr>
-            <th className="border border-gray-300 p-3">Name</th>
+            <th className="border border-gray-300 p-3">username</th>
             <th className="border border-gray-300 p-3">Email</th>
             <th className="border border-gray-300 p-3">Actions</th>
           </tr>
@@ -171,17 +210,17 @@ const UserList = () => {
         <tbody>
           {users.map((user) => (
             <tr key={user.email} className="hover:bg-gray-100">
-              <td className="border border-gray-300 p-3">{user.name}</td>
+              <td className="border border-gray-300 p-3">{user.username}</td>
               <td className="border border-gray-300 p-3">{user.email}</td>
               <td className="border border-gray-300 p-3 flex gap-4">
                 <button
-                  
+                  onClick={() => handleOpen(user)}
                   className="text-blue-500 hover:underline"
                 >
                   Edit
                 </button>
                 <button
-                  onClick={() => handleDelete()}
+                  onClick={() => handleDelete(user._id!)}
                   className="text-red-500 hover:underline"
                 >
                   Delete

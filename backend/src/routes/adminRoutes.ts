@@ -7,7 +7,7 @@ router.get("/dashboard", verifyToken, (req, res) => {
   return res.status(200).json({ message: "welcome to admin dashboard" });
 });
 
-router.get("/users-list", async (req, res) => {
+router.get("/users", async (req, res) => {
   try {
     const users = await User.find();
     res.json(users);
@@ -18,7 +18,7 @@ router.get("/users-list", async (req, res) => {
 
 router.post("/create-user", async (req, res) => {
   try {
-    const { name, email } = req.body;
+    const { username, email } = req.body;
     const existingUser = await User.findOne({ email });
 
     if (existingUser) {
@@ -26,7 +26,7 @@ router.post("/create-user", async (req, res) => {
     }
 
     const user = new User({
-      name,
+      username,
       email,
       password: "admin",
     });
@@ -41,11 +41,11 @@ router.post("/create-user", async (req, res) => {
 
 router.put("/update/:userId", async (req, res) => {
   try {
-    const { name, email } = req.body;
+    const { username, email, role } = req.body;
 
     const updatedUser = await User.findByIdAndUpdate(
       req.params.userId,
-      { name, email },
+      { username, email, role },
       { new: true }
     );
 
