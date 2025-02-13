@@ -18,9 +18,9 @@ router.get("/users", async (req, res) => {
 
 router.post("/create-user", async (req, res) => {
   try {
-    const { username, email } = req.body;
+    const { username, email,role,password } = req.body;
+    
     const existingUser = await User.findOne({ email });
-
     if (existingUser) {
       return res.status(400).json({ message: "User is already exists" });
     }
@@ -28,7 +28,8 @@ router.post("/create-user", async (req, res) => {
     const user = new User({
       username,
       email,
-      password: "admin",
+      role,
+      password
     });
     await user.save();
     return res

@@ -6,6 +6,7 @@ import {
   updateUser,
   deleteUser,
 } from "../../api/adminApi";
+import { AxiosError } from "axios";
 
 interface AdminState {
   users: User[];
@@ -31,9 +32,14 @@ export const create_user = createAsyncThunk(
     email: string;
     password: string;
     role: string;
-  }) => {
-    const response = await createUser(userdata);
+  },{rejectWithValue}) => {
+    try{
+        const response = await createUser(userdata);
     return response.data;
+    }catch(error){
+        if(error instanceof AxiosError) return rejectWithValue(error.response?.data.message)
+        return rejectWithValue('No response from server. Please try again.')
+    }
   }
 );
 
@@ -93,6 +99,7 @@ const adminSlice = createSlice({
       })
       .addCase(create_user.rejected, (state, action) => {
         state.loading = false;
+        console.log('action.error.message >> ', action.error);
         state.error = action.error.message as string;
       })
       .addCase(update_user.pending, (state) => {

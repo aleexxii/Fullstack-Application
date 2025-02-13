@@ -26,19 +26,16 @@ const style = {
 
 const UserList = () => {
   const [open, setOpen] = useState(false);
-  const [userData, setUserData] = useState({
-    username: "",
-    email: "",
-    password: "",
-  });
-  const [selectedUser, setSelectedUser] = useState<{
-    _id: string;
-    username: string;
-    email: string;
-  } | null>(null);
+  const [userData, setUserData] = useState({ username: "", email: "", password: "", confirmPassword : '', role: "" });
+  const [selectedUser, setSelectedUser] = useState<{ _id: string; username: string; email: string; role: string } | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+
   const dispatch = useAppDispatch();
   const { users } = useAppSelector((state) => state.admin);
-  const [searchQuery, setSearchQuery] = useState("");
+
+  useEffect(() => {
+    dispatch(fetchAllUsers());
+  }, [dispatch]);
 
   const filterdUsers = users.filter(
     (user) =>
@@ -46,18 +43,20 @@ const UserList = () => {
       user.email.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  useEffect(() => {
-    dispatch(fetchAllUsers());
-  }, [dispatch]);
-
   const handleOpen = (
-    user: { _id: string; username: string; email: string } | null
+    user: { _id: string; username: string; email: string; role: string } | null
   ) => {
     setSelectedUser(user);
     setUserData(
       user
-        ? { username: user.username, email: user.email, password: "" }
-        : { username: "", email: "", password: "" }
+        ? {
+            username: user.username,
+            email: user.email,
+            password: "",
+            confirmPassword : '',
+            role: user.role,
+          }
+        : { username: "", email: "", password: "", confirmPassword : '', role: "" }
     );
     setOpen(true);
   };
@@ -69,6 +68,44 @@ const UserList = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!userData.username.trim()) {
+      toast.error("Username is required");
+      return;
+    }
+  
+    if (!userData.email.trim()) {
+      toast.error("Email is required");
+      return;
+    }
+  
+    
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(userData.email)) {
+      toast.error("Invalid email format");
+      return;
+    }
+  
+    if (!selectedUser) {
+      if (!userData.password.trim()) {
+        toast.error("Password is required");
+        return;
+      }
+  
+      if (userData.password.length < 6) {
+        toast.error("Password must be at least 6 characters");
+        return;
+      }
+  
+      if (userData.password !== userData.confirmPassword) {
+        toast.error("Passwords do not match");
+        return;
+      }
+  
+      if (!userData.role.trim()) {
+        toast.error("Role is required");
+        return;
+      }
+    }
     try {
       if (selectedUser) {
         await dispatch(
@@ -77,21 +114,25 @@ const UserList = () => {
             userData: {
               username: userData.username,
               email: userData.email,
-              role: "user",
             },
           })
         );
         toast.success("User updated successfully");
       } else {
-        await dispatch(
+
+        const res = await dispatch(
           create_user({
             username: userData.username,
             email: userData.email,
             password: userData.password,
-            role: "user",
+            role: userData.role,
           })
         );
-        toast.success("User created successfully");
+        console.log('res from create' , res);
+        if(res.payload.message == 'Rejected'){
+          return toast.error(res.payload);
+        }
+        toast.success(res.payload)
       }
       dispatch(fetchAllUsers());
       handleClose();
@@ -162,7 +203,6 @@ const UserList = () => {
                     value={userData.username}
                     onChange={handleChange}
                     className="w-full p-2 border border-gray-300 rounded-lg"
-                    required
                   />
                 </div>
 
@@ -180,7 +220,6 @@ const UserList = () => {
                     value={userData.email}
                     onChange={handleChange}
                     className="w-full p-2 border border-gray-300 rounded-lg"
-                    required
                   />
                 </div>
 
@@ -212,12 +251,27 @@ const UserList = () => {
                       </label>
                       <input
                         type="password"
-                        name="password"
-                        value={userData.password}
+                        name="confirmPassword"
+                        value={userData.confirmPassword}
                         onChange={handleChange}
                         className="w-full p-2 border border-gray-300 rounded-lg"
                         placeholder="Confirm Password"
-                        required
+                      />
+                    </div>
+                    <div className="mb-6">
+                      <label
+                        htmlFor="password"
+                        className="block text-gray-700 font-bold mb-2"
+                      >
+                        Role
+                      </label>
+                      <input
+                        type="text"
+                        name="role"
+                        value={userData.role}
+                        onChange={handleChange}
+                        className="w-full p-2 border border-gray-300 rounded-lg"
+                        placeholder="Role"
                       />
                     </div>
                   </div>
