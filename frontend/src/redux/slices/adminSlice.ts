@@ -45,10 +45,19 @@ export const create_user = createAsyncThunk(
 
 export const delete_user = createAsyncThunk(
   "admin/deleteUser",
-  async (userId: string) => {
-    const response = await deleteUser(userId);
-    console.log("delete response :>>", response);
-    return userId;
+  async (userId: string, {rejectWithValue}) => {
+    try{
+        const response = await deleteUser(userId);
+        if(response.status !== 200){
+            return rejectWithValue(response.data.message);
+        }
+        return userId;
+    }catch(error){
+        if(error instanceof AxiosError){
+            return rejectWithValue(error.response?.data.message || "Delete failed")
+        }
+        return rejectWithValue("Delete failed");
+    }
   }
 );
 
@@ -60,10 +69,16 @@ export const update_user = createAsyncThunk(
   }: {
     userId: string;
     userData: { username?: string; email?: string; role?: string };
-  }) => {
-    const response = await updateUser(userId, userData);
-    console.log("response from update >>", response);
-    return response.data;
+  }, { rejectWithValue }) => {
+    try {
+        const response = await updateUser(userId, userData);
+        return response.data;
+    } catch (error) {
+        if(error instanceof AxiosError){
+            return rejectWithValue(error.response?.data.message || "Update  failed")
+        }
+        return rejectWithValue("Update  failed");
+    }
   }
 );
 
@@ -87,7 +102,7 @@ const adminSlice = createSlice({
       })
       .addCase(fetchAllUsers.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message as string;
+        state.error = action.payload as string;
       })
       .addCase(create_user.pending, (state) => {
         state.loading = true;
@@ -99,8 +114,8 @@ const adminSlice = createSlice({
       })
       .addCase(create_user.rejected, (state, action) => {
         state.loading = false;
-        console.log('action.error.message >> ', action.error);
-        state.error = action.error.message as string;
+        console.log('create user ', action.payload);
+        state.error = action.payload as string;
       })
       .addCase(update_user.pending, (state) => {
         state.loading = true;
@@ -115,7 +130,7 @@ const adminSlice = createSlice({
       })
       .addCase(update_user.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message as string;
+        state.error = action.payload as string;
       })
 
       .addCase(delete_user.pending, (state) => {

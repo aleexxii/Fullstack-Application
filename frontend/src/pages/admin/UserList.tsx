@@ -116,29 +116,25 @@ const UserList = () => {
               email: userData.email,
             },
           })
-        );
+        ).unwrap();
         toast.success("User updated successfully");
       } else {
 
-        const res = await dispatch(
+        await dispatch(
           create_user({
             username: userData.username,
             email: userData.email,
             password: userData.password,
             role: userData.role,
           })
-        );
-        console.log('res from create' , res);
-        if(res.payload.message == 'Rejected'){
-          return toast.error(res.payload);
-        }
-        toast.success(res.payload)
+        ).unwrap();
+
+        toast.success('successfully')
       }
       dispatch(fetchAllUsers());
       handleClose();
-    } catch (error) {
-      if (error instanceof Error)
-        toast.error(error.message || "Operation failed");
+    } catch (error : unknown) {
+        toast.error(error as string || "Operation failed");
     }
   };
 
