@@ -2,18 +2,27 @@
 
 A web application that provides secure authentication, role-based access control (RBAC), and user management functionalities. Users can register, log in, and update their profiles, while administrators can manage users and perform CRUD operations.
 
-## **Demo Screenshots**  
+## **Demo Screenshots**
+
 <p align="center">
-  <img src="Demo/Login.png" alt="Login Page" width="400"/>
-  <img src="Demo/Register.png" alt="Register Page" width="400"/>
-  <img src="Demo/Home.png" alt="Home Page" width="400"/>
-  <img src="Demo/Profile.png" alt="Profile Page" width="400"/>
+  <img src="Demo/Login.png" alt="Login Page" width="600" height="auto"/>
+</p>
+<p>
+  <img src="Demo/Profile.png" alt="Profile Page" width="600" height="auto"/>
+</p>
+<p>
+  <img src="Demo/Home.png" alt="Home Page" width="600" height="auto"/>
+</p>
+<p>
+  <img src="Demo/Register.png" alt="Register Page" width="600" height="auto"/>
 </p>
 
-## **Demo Video** 
+## **Demo Video**
+
 ![Demo Video](Demo/Demo.gif)
 
-## **Features**  
+## **Features**
+
 ✅ **User Authentication** (Sign Up, Login, Logout, Password Hashing)  
 ✅ **Role-Based Access Control (RBAC)** (Admin & User Permissions)  
 ✅ **User Profile Management** (Update Info, Change Password)  
@@ -21,23 +30,26 @@ A web application that provides secure authentication, role-based access control
 ✅ **Secure API** with JWT Authentication  
 ✅ **Error Handling & Validation**
 
-## **Technologies Used** 
+## **Technologies Used**
 
-### **Frontend**  
-- React  
-- Redux  
-- Lottie Animation  
-- React Hot Toast 
+### **Frontend**
 
-### **Backend**  
-- Node.js (Express.js) 
+- React
+- Redux
+- Lottie Animation
+- React Hot Toast
 
-### **Database**  
-- MongoDB  
+### **Backend**
 
-## **Installation & Setup**  
+- Node.js (Express.js)
 
-### **1. Clone the repository**  
+### **Database**
+
+- MongoDB
+
+## **Installation & Setup**
+
+### **1. Clone the repository**
 
 https://github.com/aleexxii/Fullstack-Application.git
 cd Fullstack-Application
@@ -48,7 +60,7 @@ npm i
 
 Set up environment variables
 Create a .env file in the root directory of both folder add
-frontend 
+frontend
 VITE_API_BASE_URL= http://localhost:7000
 backend
 PORT = 7000
@@ -61,15 +73,16 @@ MONGO_URI = your mongodb link
 FRONTEND_URL = http://localhost:5173
 
 Run the application
+
 # Start backend
+
 cd backend
 npm run dev
 
 # Start frontend
+
 cd frontend
 npm run dev
-
-
 
 Contribution
 
