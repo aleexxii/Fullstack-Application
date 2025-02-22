@@ -7,13 +7,13 @@ A web application that provides secure authentication, role-based access control
 <p align="center">
   <img src="Demo/Login.png" alt="Login Page" width="600" height="auto"/>
 </p>
-<p>
+<p align="center" style="margin-top: 20px;">
   <img src="Demo/Profile.png" alt="Profile Page" width="600" height="auto"/>
 </p>
-<p>
+<p align="center" style="margin-top: 20px;">
   <img src="Demo/Home.png" alt="Home Page" width="600" height="auto"/>
 </p>
-<p>
+<p align="center" style="margin-top: 20px;">
   <img src="Demo/Register.png" alt="Register Page" width="600" height="auto"/>
 </p>
 
