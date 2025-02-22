@@ -5,10 +5,10 @@ A web application that provides secure authentication, role-based access control
 ## **Demo Screenshots**  
 <p align="center">
   <img src="Demo/Login.png" alt="Login Page" width="400"/>
+  <img src="Demo/Register.png" alt="Register Page" width="400"/>
+  <img src="Demo/Home.png" alt="Home Page" width="400"/>
+  <img src="Demo/Profile.png" alt="Profile Page" width="400"/>
 </p>
-![Register Page image](Demo/Register.png)
-![Home Page image](Demo/Home.png)
-![Profile Page image](Demo/Profile.png)
 
 ## **Demo Video** 
 ![Demo Video](Demo/Demo.gif)
