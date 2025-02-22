@@ -3,7 +3,9 @@
 A web application that provides secure authentication, role-based access control (RBAC), and user management functionalities. Users can register, log in, and update their profiles, while administrators can manage users and perform CRUD operations.
 
 ## **Demo Screenshots**  
-![Login Page image](Demo/Login.png)
+<p align="center">
+  <img src="Demo/Login.png" alt="Login Page" width="400"/>
+</p>
 ![Register Page image](Demo/Register.png)
 ![Home Page image](Demo/Home.png)
 ![Profile Page image](Demo/Profile.png)
