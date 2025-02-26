@@ -39,7 +39,7 @@ userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) {
     next();
   }
-
+  /* salt (random data) makes hashes more secure. */
   const salt = await bcryptJs.genSalt(10);
   this.password = await bcryptJs.hash(this.password, salt);
 });
